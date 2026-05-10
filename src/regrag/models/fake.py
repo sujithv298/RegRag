@@ -20,12 +20,13 @@ deterministic. The pipeline can't tell it apart from `AnthropicAdapter`.
 
 from __future__ import annotations
 
-from typing import Any, Callable, Union
+from collections.abc import Callable
+from typing import Any
 
 from regrag.agent.types import AgentStep, AgentTurn
 from regrag.models.types import GenerationResult
 
-FakeResponse = Union[str, Callable[[str, str], str]]
+FakeResponse = str | Callable[[str, str], str]
 FakeAgentResponder = Callable[[str, str, list[Any], list[AgentStep]], AgentTurn]
 
 
@@ -68,10 +69,7 @@ class FakeAdapter:
             raise RuntimeError(
                 "FakeAdapter constructed in agent-mode only; call agent_turn() instead."
             )
-        if callable(self._response):
-            text = self._response(system, user)
-        else:
-            text = self._response
+        text = self._response(system, user) if callable(self._response) else self._response
         return GenerationResult(
             text=text,
             model_name=self._name,

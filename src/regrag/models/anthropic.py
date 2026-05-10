@@ -54,7 +54,7 @@ class AnthropicAdapter:
         temperature: float = 0.0,
     ) -> GenerationResult:
         self._ensure_loaded()
-        assert self._client is not None  # noqa: S101
+        assert self._client is not None
         message = self._client.messages.create(  # type: ignore[attr-defined]
             model=self._model_name,
             system=system,
@@ -67,23 +67,25 @@ class AnthropicAdapter:
             text=text,
             model_name=self._model_name,
             model_version=getattr(message, "model", self._model_name),
-            input_tokens=getattr(message.usage, "input_tokens", None) if getattr(message, "usage", None) else None,
-            output_tokens=getattr(message.usage, "output_tokens", None) if getattr(message, "usage", None) else None,
+            input_tokens=getattr(message.usage, "input_tokens", None)
+            if getattr(message, "usage", None)
+            else None,
+            output_tokens=getattr(message.usage, "output_tokens", None)
+            if getattr(message, "usage", None)
+            else None,
         )
 
     def _ensure_loaded(self) -> None:
         if self._client is not None:
             return
         try:
-            from anthropic import Anthropic  # noqa: PLC0415
+            from anthropic import Anthropic
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "AnthropicAdapter requires the `anthropic` package. "
                 "Install via `uv sync` (it's in the default deps)."
             ) from exc
-        self._client = (
-            Anthropic(api_key=self._api_key) if self._api_key else Anthropic()
-        )
+        self._client = Anthropic(api_key=self._api_key) if self._api_key else Anthropic()
 
 
 class AnthropicAgentAdapter:
@@ -137,7 +139,7 @@ class AnthropicAgentAdapter:
     ) -> AgentTurn:
         """One turn of the agent loop. Calls Anthropic with `tool_use` enabled."""
         self._ensure_loaded()
-        assert self._client is not None  # noqa: S101
+        assert self._client is not None
 
         messages = self._build_messages(user=user, history=history)
         anthropic_tools = [_tool_to_anthropic_spec(t) for t in tools]
@@ -154,9 +156,7 @@ class AnthropicAgentAdapter:
 
     # ---- Internal ----
 
-    def _build_messages(
-        self, *, user: str, history: list[AgentStep]
-    ) -> list[dict[str, Any]]:
+    def _build_messages(self, *, user: str, history: list[AgentStep]) -> list[dict[str, Any]]:
         """Reconstruct the conversation: original user message + each
         (assistant tool_use, user tool_result) pair from history."""
         messages: list[dict[str, Any]] = [{"role": "user", "content": user}]
@@ -193,15 +193,12 @@ class AnthropicAgentAdapter:
         if self._client is not None:
             return
         try:
-            from anthropic import Anthropic  # noqa: PLC0415
+            from anthropic import Anthropic
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
-                "AnthropicAgentAdapter requires the `anthropic` package. "
-                "Install via `uv sync`."
+                "AnthropicAgentAdapter requires the `anthropic` package. Install via `uv sync`."
             ) from exc
-        self._client = (
-            Anthropic(api_key=self._api_key) if self._api_key else Anthropic()
-        )
+        self._client = Anthropic(api_key=self._api_key) if self._api_key else Anthropic()
 
 
 # ---- Module-level helpers ----

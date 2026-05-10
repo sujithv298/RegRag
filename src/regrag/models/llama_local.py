@@ -34,7 +34,7 @@ class LlamaLocalAdapter:
     @property
     def name(self) -> str:
         # The path's basename is what humans recognize ("llama-3-70b.Q4_K_M.gguf").
-        from pathlib import Path  # noqa: PLC0415
+        from pathlib import Path
 
         return Path(self._model_path).name
 
@@ -51,7 +51,7 @@ class LlamaLocalAdapter:
         temperature: float = 0.0,
     ) -> GenerationResult:
         self._ensure_loaded()
-        assert self._model is not None  # noqa: S101
+        assert self._model is not None
         # llama-cpp's chat API takes OpenAI-shaped messages.
         result = self._model.create_chat_completion(  # type: ignore[attr-defined]
             messages=[
@@ -76,7 +76,7 @@ class LlamaLocalAdapter:
         if self._model is not None:
             return
         try:
-            from llama_cpp import Llama  # noqa: PLC0415
+            from llama_cpp import Llama
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "LlamaLocalAdapter requires `llama-cpp-python`. "

@@ -49,7 +49,7 @@ class OpenAIAdapter:
         temperature: float = 0.0,
     ) -> GenerationResult:
         self._ensure_loaded()
-        assert self._client is not None  # noqa: S101
+        assert self._client is not None
         completion = self._client.chat.completions.create(  # type: ignore[attr-defined]
             model=self._model_name,
             temperature=temperature,
@@ -74,7 +74,7 @@ class OpenAIAdapter:
         if self._client is not None:
             return
         try:
-            from openai import OpenAI  # noqa: PLC0415
+            from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "OpenAIAdapter requires the `openai` package. "
@@ -140,7 +140,7 @@ class OpenAIAgentAdapter:
         history: list[AgentStep],
     ) -> AgentTurn:
         self._ensure_loaded()
-        assert self._client is not None  # noqa: S101
+        assert self._client is not None
 
         messages = self._build_messages(system=system, user=user, history=history)
         openai_tools = [_tool_to_openai_spec(t) for t in tools]
@@ -197,11 +197,10 @@ class OpenAIAgentAdapter:
         if self._client is not None:
             return
         try:
-            from openai import OpenAI  # noqa: PLC0415
+            from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
-                "OpenAIAgentAdapter requires the `openai` package. "
-                "Install via `uv sync`."
+                "OpenAIAgentAdapter requires the `openai` package. Install via `uv sync`."
             ) from exc
         self._client = OpenAI(api_key=self._api_key) if self._api_key else OpenAI()
 
