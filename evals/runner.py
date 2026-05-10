@@ -12,19 +12,9 @@ fold over (gold_set, pipeline) → report. Class state would just be ceremony.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
-
-from typing import Callable
-
-from regrag.audit import AuditLogger
-from regrag.chunking import Chunk
-from regrag.pii import PIIScrubber
-from regrag.pipeline import AnswerResult, answer_query
-from regrag.prompt import PROMPT_TEMPLATE_VERSION
-from regrag.retrieval.hybrid import HybridRetriever
-
-PipelineFn = Callable[..., AnswerResult]
 
 from evals.types import (
     Category,
@@ -33,6 +23,14 @@ from evals.types import (
     EvalReport,
     GoldEntry,
 )
+from regrag.audit import AuditLogger
+from regrag.chunking import Chunk
+from regrag.pii import PIIScrubber
+from regrag.pipeline import AnswerResult, answer_query
+from regrag.prompt import PROMPT_TEMPLATE_VERSION
+from regrag.retrieval.hybrid import HybridRetriever
+
+PipelineFn = Callable[..., AnswerResult]
 
 
 def load_gold_set(path: str | Path) -> list[GoldEntry]:
@@ -80,7 +78,7 @@ def run_eval(
         cases.append(_score_case(entry, result))
 
     return EvalReport(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         gold_set_path=gold_set_path,
         model_name=getattr(model, "name", "unknown"),
         prompt_template_version=prompt_template_version,
@@ -104,15 +102,9 @@ def compute_metrics(cases: list[EvalCaseResult]) -> EvalMetrics:
             pass_rate=0.0,
         )
 
-    # Partition: did the gold expect an answer or a refusal?
-    should_answer = [
-        c for c in cases
-        if not (c.actual_outcome == "refused" and c.outcome_matches_expected)
-        and not (c.actual_outcome == "answered" and not c.outcome_matches_expected)
-    ]
-    # Above is brittle. Cleaner: use whether the *expected* outcome was refusal.
-    # The case result doesn't carry the gold entry, but we can infer:
-    # outcome_matches_expected combined with actual_outcome tells us.
+    # Partition: did the gold expect an answer or a refusal? We infer the
+    # expected outcome from `outcome_matches_expected` combined with
+    # `actual_outcome` — the case result doesn't carry the gold entry directly.
     expected_refuse = [
         c for c in cases
         if (c.actual_outcome == "refused" and c.outcome_matches_expected)

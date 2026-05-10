@@ -112,6 +112,9 @@ files = ["src", "tests", "evals"]
 # ---- Tests ----
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Make the package importable without `pip install -e .` first. Mirrors the
+# Makefile's `PYTHONPATH=src:.` so `pytest` works from a fresh clone.
+pythonpath = ["src", "."]
 addopts = "-ra --strict-markers"
 markers = [
     "integration: tests that hit a real Chroma store or model API (deselected by default in CI)",

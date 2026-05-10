@@ -20,13 +20,13 @@ agent loop; it could orchestrate any LLM + tools.
 
 from __future__ import annotations
 
-from regrag.agent.types import AgentStep, AgentTrace, ToolCall, ToolResult
 from regrag.agent.tools import Tool
+from regrag.agent.types import AgentStep, AgentTrace, ToolCall, ToolResult
 
 DEFAULT_MAX_TURNS = 6
 
 
-class AgentBudgetExceeded(RuntimeError):
+class AgentBudgetExceeded(RuntimeError):  # noqa: N818 — exported name; keep stable for callers + tests
     """Raised when the loop hits max_turns without a final answer."""
 
 
@@ -63,7 +63,7 @@ def run_agent_loop(
         )
 
         if agent_turn.is_final:
-            assert agent_turn.text is not None  # noqa: S101
+            assert agent_turn.text is not None
             return AgentLoopResult(
                 final_text=agent_turn.text,
                 trace=AgentTrace(steps=steps),
@@ -94,7 +94,7 @@ def run_agent_loop(
         try:
             content = tool.run(call.arguments)
             is_error = False
-        except Exception as exc:  # noqa: BLE001 — tool failures must be reported, not raised
+        except Exception as exc:
             content = f"Error executing tool '{call.name}': {exc}"
             is_error = True
 
