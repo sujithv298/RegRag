@@ -134,6 +134,15 @@ asyncio_mode = "auto"
 [tool.coverage.run]
 source = ["src/regrag"]
 branch = true
+# Exclude integration surfaces from coverage measurement. These are
+# wrappers/entrypoints, not core library logic — they're exercised by
+# the playground UI and CLI smoke tests in CI's separate integration
+# job, not by unit tests.
+omit = [
+    "src/regrag/api.py",                # FastAPI playground service
+    "src/regrag/cli.py",                # Click CLI entrypoints
+    "src/regrag/models/llama_local.py", # Optional llama.cpp adapter (needs heavy dep)
+]
 
 [tool.coverage.report]
 show_missing = true
