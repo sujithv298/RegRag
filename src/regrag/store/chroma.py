@@ -36,7 +36,7 @@ class ChromaStore:
         collection_name: str = DEFAULT_COLLECTION,
     ) -> None:
         try:
-            import chromadb  # noqa: PLC0415
+            import chromadb
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "ChromaStore requires chromadb. Install via `uv sync` "

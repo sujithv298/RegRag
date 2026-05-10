@@ -12,7 +12,6 @@ import math
 
 from regrag.retrieval.embeddings import Embedder, HashingEmbedder
 
-
 # ---- Protocol conformance ----
 
 

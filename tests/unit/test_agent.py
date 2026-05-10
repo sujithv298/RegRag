@@ -13,12 +13,10 @@ import pytest
 
 from regrag.agent import (
     AgentBudgetExceeded,
-    AgentStep,
     AgentTurn,
     ExpandChunkContext,
     GetChunkByCitation,
     SearchRegulations,
-    Tool,
     ToolCall,
     run_agent_loop,
 )

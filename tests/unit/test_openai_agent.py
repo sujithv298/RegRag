@@ -18,7 +18,6 @@ from regrag.models.openai import (
     _tool_to_openai_spec,
 )
 
-
 # ---- Tool spec translation ----
 
 

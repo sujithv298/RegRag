@@ -24,7 +24,7 @@ PROMPT_TEMPLATE_VERSION = "0.1.0"
 
 REFUSAL_PHRASE = "I cannot answer this question based on the provided regulatory text."
 
-SYSTEM_PROMPT = """You are a regulatory compliance assistant for US banking regulations. \
+SYSTEM_PROMPT = f"""You are a regulatory compliance assistant for US banking regulations. \
 You answer questions using only the regulatory text excerpts provided in each conversation.
 
 Rules:
@@ -39,13 +39,13 @@ the same sentence as the claim it supports.
 
 3. If the provided regulatory text does not contain enough information to answer the \
 question, respond with exactly this phrase and nothing else: \
-"{refusal_phrase}"
+"{REFUSAL_PHRASE}"
 
 4. Paraphrase in plain English. Quote regulation language only when the exact wording \
 matters. Do not speculate, extrapolate, or give legal advice.
 
 5. Do not invent citations. If language you want to cite is not in the provided text, \
-do not write it.""".format(refusal_phrase=REFUSAL_PHRASE)
+do not write it."""
 
 
 def render_user_message(question: str, chunks: list[Chunk]) -> str:

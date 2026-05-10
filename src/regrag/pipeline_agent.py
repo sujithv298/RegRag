@@ -40,7 +40,7 @@ from regrag.chunking import Chunk
 from regrag.citations import CitationExtractor, CitationVerifier
 from regrag.pii import PIIScrubber, RegexPIIScrubber
 from regrag.pipeline import AnswerResult
-from regrag.prompt import PROMPT_TEMPLATE_VERSION, REFUSAL_PHRASE
+from regrag.prompt import REFUSAL_PHRASE
 from regrag.retrieval.hybrid import HybridRetriever
 
 AGENT_PROMPT_TEMPLATE_VERSION = "agent-0.1.0"

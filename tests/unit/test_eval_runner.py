@@ -11,6 +11,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+from evals import compute_metrics, load_gold_set, run_eval
+from evals.types import EvalCaseResult, EvalReport, GoldEntry
 
 from regrag.audit import AuditLogger
 from regrag.chunking import chunk_nodes
@@ -24,9 +26,6 @@ from regrag.retrieval import (
     LexicalOverlapReranker,
 )
 from regrag.store import InMemoryVectorStore
-
-from evals import compute_metrics, load_gold_set, run_eval
-from evals.types import EvalCaseResult, EvalReport, GoldEntry
 
 FIXTURE_XML = Path(__file__).resolve().parents[1] / "fixtures" / "reg_e_part_1005_excerpt.xml"
 SMOKE_GOLD = Path(__file__).resolve().parents[1] / "fixtures" / "eval_smoke.jsonl"

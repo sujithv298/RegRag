@@ -21,7 +21,7 @@ LinkedIn post.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -112,7 +112,7 @@ def compare_reports(
     ]
 
     return ComparisonReport(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         gold_set_path=gold_set_path,
         deterministic_report=deterministic,
         agent_report=agent,

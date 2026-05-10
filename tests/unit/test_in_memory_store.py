@@ -6,8 +6,8 @@ import math
 
 import pytest
 
-from regrag.chunking.hierarchy import HierarchyNode
 from regrag.chunking import chunk_nodes
+from regrag.chunking.hierarchy import HierarchyNode
 from regrag.store import InMemoryVectorStore, VectorStore
 
 

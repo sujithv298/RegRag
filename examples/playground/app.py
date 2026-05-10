@@ -13,7 +13,6 @@ Run:
 from __future__ import annotations
 
 import json
-import os
 import sys
 import time
 from pathlib import Path
@@ -102,15 +101,15 @@ def _load() -> tuple[list[Chunk], HybridRetriever]:
 
 def _agent_adapter(model_id: str):
     if model_id == "fake-good":
-        from regrag.cli import _fake_good_agent_responder  # noqa: PLC0415
+        from regrag.cli import _fake_good_agent_responder
 
         return FakeAdapter(agent_responder=_fake_good_agent_responder, name="fake-good", version="v0")
     if model_id == "fake-bad":
-        from regrag.cli import _fake_bad_agent_responder  # noqa: PLC0415
+        from regrag.cli import _fake_bad_agent_responder
 
         return FakeAdapter(agent_responder=_fake_bad_agent_responder, name="fake-bad", version="v0")
     if model_id == "anthropic":
-        from regrag.models import AnthropicAgentAdapter  # noqa: PLC0415
+        from regrag.models import AnthropicAgentAdapter
 
         return AnthropicAgentAdapter()
     raise ValueError(model_id)
@@ -129,7 +128,7 @@ def _run(question: str, *, model_id: str = "fake-good") -> None:
     adapter = _agent_adapter(model_id)
 
     with st.status("Thinking…", expanded=False) as status:
-        st.write(f"→ searching the regulation for context")
+        st.write("→ searching the regulation for context")
         time.sleep(0.3)
         result = answer_query_agentic(
             question,
@@ -149,7 +148,7 @@ def _run(question: str, *, model_id: str = "fake-good") -> None:
 
     # Verdict
     if result.outcome == "answered":
-        st.success(f"✓  Answered")
+        st.success("✓  Answered")
     else:
         st.error(f"✗  Refused — {result.refusal_reason}")
 

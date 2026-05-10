@@ -36,6 +36,8 @@ try:
 except ImportError:
     pass
 
+import contextlib
+
 from regrag.audit import AuditLogger
 from regrag.chunking import Chunk
 from regrag.models import FakeAdapter
@@ -175,10 +177,8 @@ class _ResponseCache:
                 except OSError:
                     # Best-effort: if we can't delete (e.g. read-only fs),
                     # at least empty it.
-                    try:
+                    with contextlib.suppress(OSError):
                         _CACHE_PATH.write_text("")
-                    except OSError:
-                        pass
             self._loaded = True
             return n
 

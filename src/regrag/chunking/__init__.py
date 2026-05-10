@@ -22,4 +22,4 @@ from regrag.chunking.chunk import Chunk
 from regrag.chunking.chunker import DEFAULT_MAX_TOKENS, chunk_nodes
 from regrag.chunking.hierarchy import HierarchyNode
 
-__all__ = ["Chunk", "DEFAULT_MAX_TOKENS", "HierarchyNode", "chunk_nodes"]
+__all__ = ["DEFAULT_MAX_TOKENS", "Chunk", "HierarchyNode", "chunk_nodes"]

@@ -18,7 +18,6 @@ from regrag.models.anthropic import (
     _tool_to_anthropic_spec,
 )
 
-
 # ---- Tool spec translation ----
 
 

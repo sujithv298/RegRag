@@ -110,8 +110,8 @@ class PresidioPIIScrubber:
 
     def scrub(self, text: str) -> ScrubResult:
         self._ensure_loaded()
-        assert self._analyzer is not None  # noqa: S101
-        assert self._anonymizer is not None  # noqa: S101
+        assert self._analyzer is not None
+        assert self._anonymizer is not None
         results = self._analyzer.analyze(text=text, language="en")  # type: ignore[attr-defined]
         if not results:
             return ScrubResult(text=text, redaction_count=0)
@@ -122,8 +122,8 @@ class PresidioPIIScrubber:
         if self._analyzer is not None:
             return
         try:
-            from presidio_analyzer import AnalyzerEngine  # noqa: PLC0415
-            from presidio_anonymizer import AnonymizerEngine  # noqa: PLC0415
+            from presidio_analyzer import AnalyzerEngine
+            from presidio_anonymizer import AnonymizerEngine
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "PresidioPIIScrubber requires presidio-analyzer and "

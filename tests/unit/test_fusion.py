@@ -6,8 +6,8 @@ changes (different k_rrf, weighted variants) don't silently shift behavior.
 
 from __future__ import annotations
 
-from regrag.chunking.hierarchy import HierarchyNode
 from regrag.chunking import chunk_nodes
+from regrag.chunking.hierarchy import HierarchyNode
 from regrag.retrieval import ScoredChunk, rrf_fuse
 
 

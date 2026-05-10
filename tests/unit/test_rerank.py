@@ -7,8 +7,8 @@ belongs in tests/integration/.
 
 from __future__ import annotations
 
-from regrag.chunking.hierarchy import HierarchyNode
 from regrag.chunking import chunk_nodes
+from regrag.chunking.hierarchy import HierarchyNode
 from regrag.retrieval import (
     LexicalOverlapReranker,
     NoOpReranker,

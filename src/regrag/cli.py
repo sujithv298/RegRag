@@ -30,22 +30,23 @@ try:
 except ImportError:  # pragma: no cover
     pass
 
-from regrag.agent import AgentTurn, ToolCall  # noqa: E402
-from regrag.audit import AuditLogger  # noqa: E402
-from regrag.chunking import Chunk, chunk_nodes  # noqa: E402
-from regrag.chunking.hierarchy import HierarchyNode  # noqa: E402
-from regrag.ingest import fetch_part_xml, parse_part_xml  # noqa: E402
-from regrag.models import FakeAdapter  # noqa: E402
-from regrag.pipeline import answer_query  # noqa: E402
-from regrag.pipeline_agent import answer_query_agentic  # noqa: E402
-from regrag.retrieval import (  # noqa: E402
+from datetime import UTC
+
+from regrag.agent import AgentTurn, ToolCall
+from regrag.audit import AuditLogger
+from regrag.chunking import Chunk, chunk_nodes
+from regrag.ingest import fetch_part_xml, parse_part_xml
+from regrag.models import FakeAdapter
+from regrag.pipeline import answer_query
+from regrag.pipeline_agent import answer_query_agentic
+from regrag.retrieval import (
     BM25Index,
     DenseRetriever,
     HashingEmbedder,
     HybridRetriever,
     LexicalOverlapReranker,
 )
-from regrag.store import InMemoryVectorStore  # noqa: E402
+from regrag.store import InMemoryVectorStore
 
 DEFAULT_SNAPSHOT_DATE = "2025-01-01"
 
@@ -325,7 +326,7 @@ def _fake_good_responder(system: str, user: str) -> str:
     question = question_match.group(1).strip()
 
     # Lazy-import to avoid a top-level retrieval dep cycle.
-    from regrag.retrieval import tokenize, tokenize_query  # noqa: PLC0415
+    from regrag.retrieval import tokenize, tokenize_query
 
     q_tokens = set(tokenize_query(question))
     body_tokens = set(tokenize(body))
@@ -368,11 +369,11 @@ def _build_adapter(model_choice: str, retriever, question: str):
             version="v0",
         )
     if model_choice == "anthropic":
-        from regrag.models import AnthropicAdapter  # noqa: PLC0415
+        from regrag.models import AnthropicAdapter
 
         return AnthropicAdapter()
     if model_choice == "openai":
-        from regrag.models import OpenAIAdapter  # noqa: PLC0415
+        from regrag.models import OpenAIAdapter
 
         return OpenAIAdapter()
     raise click.UsageError(f"Unknown --model {model_choice}")
@@ -448,11 +449,11 @@ def _build_agent_adapter(model_choice: str):
             version="v0",
         )
     if model_choice == "anthropic":
-        from regrag.models import AnthropicAgentAdapter  # noqa: PLC0415
+        from regrag.models import AnthropicAgentAdapter
 
         return AnthropicAgentAdapter()
     if model_choice == "openai":
-        from regrag.models import OpenAIAgentAdapter  # noqa: PLC0415
+        from regrag.models import OpenAIAgentAdapter
 
         return OpenAIAgentAdapter()
     raise click.UsageError(f"Unknown --model {model_choice}")
@@ -482,15 +483,16 @@ def eval_compare(
     snapshot_date: str,
 ) -> None:
     """Run the gold set through deterministic AND agent pipelines; print a side-by-side comparison."""
-    from datetime import datetime, timezone  # noqa: PLC0415
+    from datetime import datetime
 
-    from evals import (  # noqa: PLC0415
+    from evals import (
         compare_reports,
         format_comparison,
         load_gold_set,
         run_eval,
     )
-    from regrag.pipeline_agent import answer_query_agentic  # noqa: PLC0415
+
+    from regrag.pipeline_agent import answer_query_agentic
 
     chunks = [
         Chunk.model_validate_json(line)
@@ -538,7 +540,7 @@ def eval_compare(
 
     out_dir = Path(out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     report_path = out_dir / f"comparison-{stamp}.json"
     report_path.write_text(comparison.model_dump_json(indent=2))
     click.echo(f"\nReport: {report_path}")
@@ -581,8 +583,7 @@ def eval_(
     """Run the eval harness against a gold set; print metrics; write JSON report."""
     # Local imports so click sees the command without paying the eval-runner
     # import cost on every CLI invocation.
-    import json
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     from evals import load_gold_set, run_eval
 
@@ -640,7 +641,7 @@ def eval_(
     # Write the report to disk.
     out_dir = Path(out)
     out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     report_path = out_dir / f"report-{stamp}.json"
     report_path.write_text(report.model_dump_json(indent=2))
     click.echo(f"\nReport: {report_path}")

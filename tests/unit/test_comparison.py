@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from evals.comparison import compare_reports, format_comparison
 from evals.types import EvalCaseResult, EvalMetrics, EvalReport
@@ -46,7 +46,7 @@ def _metrics(*, n: int = 1, pass_rate: float = 1.0) -> EvalMetrics:
 
 def _report(cases: list[EvalCaseResult], *, model_name: str) -> EvalReport:
     return EvalReport(
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         gold_set_path="test",
         model_name=model_name,
         prompt_template_version="0.1.0",

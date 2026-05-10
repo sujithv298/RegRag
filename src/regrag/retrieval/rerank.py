@@ -130,7 +130,7 @@ class CrossEncoderReranker:
         if not scored_chunks:
             return []
         self._ensure_loaded()
-        assert self._model is not None  # noqa: S101
+        assert self._model is not None
         # Cross-encoders read (query, document) pairs together. We pass the
         # full chunk.text (with prefix) — the model is robust to small
         # amounts of formatting noise and the prefix carries signal.
@@ -149,7 +149,7 @@ class CrossEncoderReranker:
         if self._model is not None:
             return
         try:
-            from sentence_transformers import CrossEncoder  # noqa: PLC0415
+            from sentence_transformers import CrossEncoder
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "CrossEncoderReranker requires sentence-transformers. Install "

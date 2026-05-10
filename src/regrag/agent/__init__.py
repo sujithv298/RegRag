@@ -15,9 +15,9 @@ guarantees as the deterministic pipeline.
 from __future__ import annotations
 
 from regrag.agent.orchestrator import (
+    DEFAULT_MAX_TURNS,
     AgentBudgetExceeded,
     AgentLoopResult,
-    DEFAULT_MAX_TURNS,
     run_agent_loop,
 )
 from regrag.agent.tools import (
@@ -35,12 +35,12 @@ from regrag.agent.types import (
 )
 
 __all__ = [
+    "DEFAULT_MAX_TURNS",
     "AgentBudgetExceeded",
     "AgentLoopResult",
     "AgentStep",
     "AgentTrace",
     "AgentTurn",
-    "DEFAULT_MAX_TURNS",
     "ExpandChunkContext",
     "GetChunkByCitation",
     "SearchRegulations",

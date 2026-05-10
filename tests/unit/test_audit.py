@@ -41,20 +41,20 @@ def _failing_verification() -> VerificationResult:
 
 
 def _make(verification: VerificationResult, **overrides):
-    base = dict(
-        scrubbed_input="What is the liability cap for timely notice?",
-        pii_redaction_count=0,
-        pii_scrubber="regex",
-        corpus_snapshot_date="2025-01-01",
-        retrieved_chunk_ids=["section:1005.6:b.1", "section:1005.6:b"],
-        prompt_template_version="0.1.0",
-        prompt_text="System prompt + retrieved chunks + question.",
-        model_name="claude-sonnet-4-6",
-        model_version="2025-01-15",
-        response_text="Liability is $50 [CFR:1005.6(b)(1)].",
-        verification=verification,
-        outcome="answered",
-    )
+    base = {
+        "scrubbed_input": "What is the liability cap for timely notice?",
+        "pii_redaction_count": 0,
+        "pii_scrubber": "regex",
+        "corpus_snapshot_date": "2025-01-01",
+        "retrieved_chunk_ids": ["section:1005.6:b.1", "section:1005.6:b"],
+        "prompt_template_version": "0.1.0",
+        "prompt_text": "System prompt + retrieved chunks + question.",
+        "model_name": "claude-sonnet-4-6",
+        "model_version": "2025-01-15",
+        "response_text": "Liability is $50 [CFR:1005.6(b)(1)].",
+        "verification": verification,
+        "outcome": "answered",
+    }
     base.update(overrides)
     return make_record(**base)
 

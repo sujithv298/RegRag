@@ -20,7 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from regrag.audit.schema import AuditCitationRecord, AuditRecord, Outcome
@@ -78,7 +78,7 @@ def make_record(
     """
     return AuditRecord(
         query_id=str(uuid.uuid4()),
-        timestamp=datetime.now(timezone.utc),
+        timestamp=datetime.now(UTC),
         scrubbed_input=scrubbed_input,
         pii_redaction_count=pii_redaction_count,
         pii_scrubber=pii_scrubber,

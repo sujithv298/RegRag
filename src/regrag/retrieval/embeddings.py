@@ -123,12 +123,12 @@ class BGEEmbedder:
     @property
     def dim(self) -> int:
         self._ensure_loaded()
-        assert self._dim_cache is not None  # noqa: S101 — documented invariant
+        assert self._dim_cache is not None
         return self._dim_cache
 
     def embed_texts(self, texts: list[str]) -> list[list[float]]:
         self._ensure_loaded()
-        assert self._model is not None  # noqa: S101
+        assert self._model is not None
         # BGE-v1.5 docs: no prefix needed for documents.
         embeddings = self._model.encode(  # type: ignore[attr-defined]
             texts, normalize_embeddings=True, show_progress_bar=False
@@ -137,7 +137,7 @@ class BGEEmbedder:
 
     def embed_query(self, query: str) -> list[float]:
         self._ensure_loaded()
-        assert self._model is not None  # noqa: S101
+        assert self._model is not None
         # BGE-v1.5 docs: queries don't need a prefix either; older BGE did.
         embedding = self._model.encode(  # type: ignore[attr-defined]
             [query], normalize_embeddings=True, show_progress_bar=False
@@ -148,7 +148,7 @@ class BGEEmbedder:
         if self._model is not None:
             return
         try:
-            from sentence_transformers import SentenceTransformer  # noqa: PLC0415
+            from sentence_transformers import SentenceTransformer
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
                 "BGEEmbedder requires sentence-transformers. Install it via "
