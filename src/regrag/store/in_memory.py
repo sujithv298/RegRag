@@ -33,9 +33,7 @@ class InMemoryVectorStore:
         self._chunks.extend(chunks)
         self._embeddings.extend(embeddings)
 
-    def search(
-        self, query_embedding: list[float], *, k: int = 10
-    ) -> list[ScoredChunk]:
+    def search(self, query_embedding: list[float], *, k: int = 10) -> list[ScoredChunk]:
         if not self._embeddings:
             return []
         scored = [

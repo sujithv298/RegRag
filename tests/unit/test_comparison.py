@@ -50,7 +50,9 @@ def _report(cases: list[EvalCaseResult], *, model_name: str) -> EvalReport:
         gold_set_path="test",
         model_name=model_name,
         prompt_template_version="0.1.0",
-        overall=_metrics(n=len(cases), pass_rate=sum(1 for c in cases if c.passed) / len(cases) if cases else 0),
+        overall=_metrics(
+            n=len(cases), pass_rate=sum(1 for c in cases if c.passed) / len(cases) if cases else 0
+        ),
         by_category={},
         cases=cases,
     )
@@ -90,9 +92,7 @@ def test_both_passed() -> None:
 
 
 def test_progressed_when_agent_passes_and_det_fails() -> None:
-    det = _report(
-        [_case(entry_id="a", citations_correct=False)], model_name="det"
-    )
+    det = _report([_case(entry_id="a", citations_correct=False)], model_name="det")
     agent = _report([_case(entry_id="a")], model_name="agent")
     report = compare_reports(deterministic=det, agent=agent)
     assert report.n_progressed == 1
@@ -101,21 +101,15 @@ def test_progressed_when_agent_passes_and_det_fails() -> None:
 
 def test_regressed_when_det_passes_and_agent_fails() -> None:
     det = _report([_case(entry_id="a")], model_name="det")
-    agent = _report(
-        [_case(entry_id="a", citations_correct=False)], model_name="agent"
-    )
+    agent = _report([_case(entry_id="a", citations_correct=False)], model_name="agent")
     report = compare_reports(deterministic=det, agent=agent)
     assert report.n_regressed == 1
     assert report.n_progressed == 0
 
 
 def test_both_failed() -> None:
-    det = _report(
-        [_case(entry_id="a", citations_correct=False)], model_name="det"
-    )
-    agent = _report(
-        [_case(entry_id="a", citations_correct=False)], model_name="agent"
-    )
+    det = _report([_case(entry_id="a", citations_correct=False)], model_name="det")
+    agent = _report([_case(entry_id="a", citations_correct=False)], model_name="agent")
     report = compare_reports(deterministic=det, agent=agent)
     assert report.n_both_failed == 1
 
@@ -134,9 +128,7 @@ def test_format_comparison_includes_both_model_names() -> None:
 
 def test_format_comparison_lists_regressions_when_present() -> None:
     det = _report([_case(entry_id="a")], model_name="det")
-    agent = _report(
-        [_case(entry_id="a", citations_correct=False)], model_name="agent"
-    )
+    agent = _report([_case(entry_id="a", citations_correct=False)], model_name="agent")
     report = compare_reports(deterministic=det, agent=agent)
     output = format_comparison(report)
     assert "Regressions" in output

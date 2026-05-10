@@ -35,8 +35,7 @@ class GoldEntry(BaseModel):
     question: str
     expected_citations: list[str] = Field(
         default_factory=list,
-        description="Canonical citation paths the system should emit. "
-        "Empty for refusal cases.",
+        description="Canonical citation paths the system should emit. Empty for refusal cases.",
     )
     expected_answer_keywords: list[str] = Field(
         default_factory=list,
@@ -44,8 +43,7 @@ class GoldEntry(BaseModel):
     )
     should_refuse: bool = Field(
         default=False,
-        description="True if the gold answer is 'refuse' (out-of-scope, "
-        "not-in-corpus, etc.).",
+        description="True if the gold answer is 'refuse' (out-of-scope, not-in-corpus, etc.).",
     )
     notes: str = Field(default="", description="Author notes; ignored by the runner.")
 
@@ -81,11 +79,7 @@ class EvalCaseResult(BaseModel):
         if self.actual_outcome == "refused" and self.outcome_matches_expected:
             return True  # correctly refused
         # outcome == "answered"
-        return (
-            self.outcome_matches_expected
-            and self.citations_correct
-            and self.keywords_present
-        )
+        return self.outcome_matches_expected and self.citations_correct and self.keywords_present
 
 
 class EvalMetrics(BaseModel):

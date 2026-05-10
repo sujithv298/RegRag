@@ -48,19 +48,23 @@ class AuditRecord(BaseModel):
 
     # Input side
     scrubbed_input: str = Field(description="PII-redacted user query. Raw is never persisted.")
-    pii_redaction_count: int = Field(
-        description="Number of PII entities Presidio/regex redacted."
+    pii_redaction_count: int = Field(description="Number of PII entities Presidio/regex redacted.")
+    pii_scrubber: str = Field(
+        description="Which scrubber implementation ran. Audit-log provenance."
     )
-    pii_scrubber: str = Field(description="Which scrubber implementation ran. Audit-log provenance.")
 
     # Corpus + retrieval
-    corpus_snapshot_date: str = Field(description="ISO date of the eCFR snapshot the index was built against.")
+    corpus_snapshot_date: str = Field(
+        description="ISO date of the eCFR snapshot the index was built against."
+    )
     retrieved_chunk_ids: list[str] = Field(description="Chunk IDs in rank order, post-rerank.")
 
     # Prompt + model
     prompt_template_version: str = Field(description="Semver of the prompt template used.")
     model_name: str = Field(description="Adapter-reported name, e.g. 'claude-sonnet-4-6'.")
-    model_version: str = Field(description="Adapter-reported version (API metadata where available).")
+    model_version: str = Field(
+        description="Adapter-reported version (API metadata where available)."
+    )
 
     # Response
     response_text: str = Field(description="Raw model output, before any refusal conversion.")

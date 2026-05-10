@@ -95,9 +95,7 @@ def test_refused_when_response_has_hallucinated_citation(
     assert "cannot answer" in result.answer.lower()
     # The hallucinated citation is recorded in the audit record, not
     # silently dropped.
-    assert any(
-        c.citation_path == "12 CFR 9999.99(z)" and not c.exists for c in result.citations
-    )
+    assert any(c.citation_path == "12 CFR 9999.99(z)" and not c.exists for c in result.citations)
 
 
 def test_refused_when_response_has_no_citations(

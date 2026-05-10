@@ -103,7 +103,9 @@ def _agent_adapter(model_id: str):
     if model_id == "fake-good":
         from regrag.cli import _fake_good_agent_responder
 
-        return FakeAdapter(agent_responder=_fake_good_agent_responder, name="fake-good", version="v0")
+        return FakeAdapter(
+            agent_responder=_fake_good_agent_responder, name="fake-good", version="v0"
+        )
     if model_id == "fake-bad":
         from regrag.cli import _fake_bad_agent_responder
 
@@ -214,7 +216,4 @@ with c3:
 
 st.write("")
 st.divider()
-st.caption(
-    "RegRAG · MIT licensed · "
-    "[GitHub](https://github.com/your-handle/regrag)"
-)
+st.caption("RegRAG · MIT licensed · [GitHub](https://github.com/your-handle/regrag)")

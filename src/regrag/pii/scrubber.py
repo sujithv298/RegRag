@@ -34,14 +34,10 @@ _SSN_RE = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 _CARD_RE = re.compile(r"\b(?:\d{4}[-\s]){3}\d{4}\b")
 
 # Email: standard local@domain.tld
-_EMAIL_RE = re.compile(
-    r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b"
-)
+_EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b")
 
 # US phone: optional +1 / 1, optional parens, separators of -, ., space.
-_PHONE_RE = re.compile(
-    r"(?<!\d)(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b"
-)
+_PHONE_RE = re.compile(r"(?<!\d)(?:\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b")
 
 
 @dataclass(frozen=True)
@@ -60,8 +56,7 @@ class PIIScrubber(Protocol):
     def name(self) -> str:
         """Stable identifier; recorded in the audit log."""
 
-    def scrub(self, text: str) -> ScrubResult:
-        ...
+    def scrub(self, text: str) -> ScrubResult: ...
 
 
 # ---- RegexPIIScrubber ----

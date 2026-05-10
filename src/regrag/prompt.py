@@ -58,13 +58,10 @@ def render_user_message(question: str, chunks: list[Chunk]) -> str:
             heading = chunk.section_heading or ""
             if chunk.is_interpretation:
                 heading = (
-                    f"Official Interpretation, 12 CFR Part {chunk.part}, "
-                    f"Comment {chunk.comment_id}"
+                    f"Official Interpretation, 12 CFR Part {chunk.part}, Comment {chunk.comment_id}"
                 )
             excerpts.append(
-                f"[Excerpt {i}] Citation: {chunk.citation_path}\n"
-                f"{heading}\n\n"
-                f"{chunk.source_text}"
+                f"[Excerpt {i}] Citation: {chunk.citation_path}\n{heading}\n\n{chunk.source_text}"
             )
         excerpts_block = "\n\n---\n\n".join(excerpts)
 

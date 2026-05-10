@@ -118,12 +118,17 @@ def inspect(xml_path: str, limit: int) -> None:
     nodes = parse_part_xml(xml_bytes)
     click.echo(f"Parsed {len(nodes)} nodes from {xml_path}\n")
     for node in nodes[:limit]:
-        click.echo(json.dumps({
-            "citation_path": node.citation_path,
-            "chunk_id": node.chunk_id,
-            "is_interpretation": node.is_interpretation,
-            "text_preview": node.text[:120] + ("..." if len(node.text) > 120 else ""),
-        }, indent=2))
+        click.echo(
+            json.dumps(
+                {
+                    "citation_path": node.citation_path,
+                    "chunk_id": node.chunk_id,
+                    "is_interpretation": node.is_interpretation,
+                    "text_preview": node.text[:120] + ("..." if len(node.text) > 120 else ""),
+                },
+                indent=2,
+            )
+        )
 
 
 @main.command(name="inspect-chunks")
@@ -198,9 +203,7 @@ def _render_results(results: list) -> None:
         click.echo("  no matches.\n")
         return
     for i, sc in enumerate(results, 1):
-        preview = sc.chunk.source_text[:140] + (
-            "..." if len(sc.chunk.source_text) > 140 else ""
-        )
+        preview = sc.chunk.source_text[:140] + ("..." if len(sc.chunk.source_text) > 140 else "")
         click.echo(f"{i}. [{sc.retriever} {sc.score:.3f}] {sc.chunk.citation_path}")
         click.echo(f"   {preview}")
     click.echo()
@@ -532,9 +535,7 @@ def eval_compare(
         prompt_template_version="agent-0.1.0",
     )
 
-    comparison = compare_reports(
-        deterministic=det_report, agent=agent_report, gold_set_path=gold
-    )
+    comparison = compare_reports(deterministic=det_report, agent=agent_report, gold_set_path=gold)
     click.echo("\n" + format_comparison(comparison))
 
     out_dir = Path(out)
@@ -546,9 +547,7 @@ def eval_compare(
 
 
 @main.command(name="eval")
-@click.option(
-    "--gold", type=click.Path(exists=True), required=True, help="Gold-set JSONL file."
-)
+@click.option("--gold", type=click.Path(exists=True), required=True, help="Gold-set JSONL file.")
 @click.option(
     "--chunks",
     "chunks_path",
@@ -633,9 +632,11 @@ def eval_(
     else:
         for c in failing:
             click.echo(f"  - {c.entry_id} ({c.category}): outcome={c.actual_outcome}")
-            click.echo(f"      cit_correct={c.citations_correct}  "
-                       f"kw_present={c.keywords_present}  "
-                       f"outcome_match={c.outcome_matches_expected}")
+            click.echo(
+                f"      cit_correct={c.citations_correct}  "
+                f"kw_present={c.keywords_present}  "
+                f"outcome_match={c.outcome_matches_expected}"
+            )
 
     # Write the report to disk.
     out_dir = Path(out)

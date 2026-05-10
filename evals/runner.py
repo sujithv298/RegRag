@@ -96,9 +96,13 @@ def compute_metrics(cases: list[EvalCaseResult]) -> EvalMetrics:
     n = len(cases)
     if n == 0:
         return EvalMetrics(
-            n_cases=0, n_should_answer=0, n_should_refuse=0,
-            citation_accuracy=0.0, answer_correctness=0.0,
-            refusal_rate_correct=0.0, refusal_rate_false_positive=0.0,
+            n_cases=0,
+            n_should_answer=0,
+            n_should_refuse=0,
+            citation_accuracy=0.0,
+            answer_correctness=0.0,
+            refusal_rate_correct=0.0,
+            refusal_rate_false_positive=0.0,
             pass_rate=0.0,
         )
 
@@ -106,7 +110,8 @@ def compute_metrics(cases: list[EvalCaseResult]) -> EvalMetrics:
     # expected outcome from `outcome_matches_expected` combined with
     # `actual_outcome` — the case result doesn't carry the gold entry directly.
     expected_refuse = [
-        c for c in cases
+        c
+        for c in cases
         if (c.actual_outcome == "refused" and c.outcome_matches_expected)
         or (c.actual_outcome == "answered" and not c.outcome_matches_expected)
     ]
@@ -122,24 +127,18 @@ def compute_metrics(cases: list[EvalCaseResult]) -> EvalMetrics:
         else 0.0
     )
     answer_correctness = (
-        sum(
-            1
-            for c in expected_answer
-            if c.actual_outcome == "answered" and c.keywords_present
-        )
+        sum(1 for c in expected_answer if c.actual_outcome == "answered" and c.keywords_present)
         / n_should_answer
         if n_should_answer
         else 0.0
     )
     refusal_rate_correct = (
-        sum(1 for c in expected_refuse if c.actual_outcome == "refused")
-        / n_should_refuse
+        sum(1 for c in expected_refuse if c.actual_outcome == "refused") / n_should_refuse
         if n_should_refuse
         else 0.0
     )
     refusal_rate_false_positive = (
-        sum(1 for c in expected_answer if c.actual_outcome == "refused")
-        / n_should_answer
+        sum(1 for c in expected_answer if c.actual_outcome == "refused") / n_should_answer
         if n_should_answer
         else 0.0
     )
@@ -164,19 +163,24 @@ def _score_case(entry: GoldEntry, result: object) -> EvalCaseResult:
     """Compare one gold entry to the pipeline's actual result."""
     actual_outcome = result.outcome  # type: ignore[attr-defined]
     actual_citations = [
-        c.citation_path for c in result.citations  # type: ignore[attr-defined]
+        c.citation_path
+        for c in result.citations  # type: ignore[attr-defined]
     ]
 
     expected_set = set(entry.expected_citations)
     actual_set = set(actual_citations)
-    citations_correct = expected_set.issubset(actual_set) if expected_set else (
-        not actual_set if entry.should_refuse else False
+    citations_correct = (
+        expected_set.issubset(actual_set)
+        if expected_set
+        else (not actual_set if entry.should_refuse else False)
     )
 
     answer_lower = result.answer.lower()  # type: ignore[attr-defined]
-    keywords_present = all(
-        kw.lower() in answer_lower for kw in entry.expected_answer_keywords
-    ) if entry.expected_answer_keywords else True
+    keywords_present = (
+        all(kw.lower() in answer_lower for kw in entry.expected_answer_keywords)
+        if entry.expected_answer_keywords
+        else True
+    )
 
     expected_outcome = "refused" if entry.should_refuse else "answered"
     outcome_matches_expected = actual_outcome == expected_outcome

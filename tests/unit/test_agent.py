@@ -138,9 +138,7 @@ def test_orchestrator_runs_one_tool_then_returns(retriever: HybridRetriever) -> 
         AgentTurn(text="Final answer with [CFR:1005.6(b)(1)]"),
     ]
     adapter = FakeAdapter(agent_responder=_scripted_responder(script))
-    result = run_agent_loop(
-        adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=5
-    )
+    result = run_agent_loop(adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=5)
     assert result.final_text == "Final answer with [CFR:1005.6(b)(1)]"
     assert result.trace.num_tool_calls == 1
     assert result.trace.steps[0].call.name == "search_regulations"
@@ -151,17 +149,11 @@ def test_orchestrator_handles_unknown_tool(retriever: HybridRetriever) -> None:
     """LLM hallucinating a tool name should produce an error result, not crash."""
     tool = SearchRegulations(retriever=retriever)
     script = [
-        AgentTurn(
-            tool_call=ToolCall(
-                name="this_tool_does_not_exist", arguments={}, call_id="c1"
-            )
-        ),
+        AgentTurn(tool_call=ToolCall(name="this_tool_does_not_exist", arguments={}, call_id="c1")),
         AgentTurn(text="recovered with [CFR:1005.6(b)(1)]"),
     ]
     adapter = FakeAdapter(agent_responder=_scripted_responder(script))
-    result = run_agent_loop(
-        adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=5
-    )
+    result = run_agent_loop(adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=5)
     assert result.trace.steps[0].result.is_error
     assert "unknown tool" in str(result.trace.steps[0].result.content)
 
@@ -170,17 +162,13 @@ def test_orchestrator_raises_on_budget_exceeded(retriever: HybridRetriever) -> N
     tool = SearchRegulations(retriever=retriever)
     script = [
         AgentTurn(
-            tool_call=ToolCall(
-                name="search_regulations", arguments={"query": "x"}, call_id=f"c{i}"
-            )
+            tool_call=ToolCall(name="search_regulations", arguments={"query": "x"}, call_id=f"c{i}")
         )
         for i in range(10)
     ]
     adapter = FakeAdapter(agent_responder=_scripted_responder(script))
     with pytest.raises(AgentBudgetExceeded):
-        run_agent_loop(
-            adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=3
-        )
+        run_agent_loop(adapter=adapter, system="sys", user="usr", tools=[tool], max_turns=3)
 
 
 def test_orchestrator_requires_at_least_one_tool() -> None:
@@ -192,9 +180,7 @@ def test_orchestrator_requires_at_least_one_tool() -> None:
 # ---- End-to-end agentic pipeline ----
 
 
-def test_agentic_pipeline_answered_path(
-    corpus: list, retriever: HybridRetriever, tmp_path
-) -> None:
+def test_agentic_pipeline_answered_path(corpus: list, retriever: HybridRetriever, tmp_path) -> None:
     """The headline test: question → agent searches → final answer with
     verifiable citation → outcome=answered, audit record written."""
 
@@ -244,9 +230,7 @@ def test_agentic_pipeline_fail_closed_on_hallucination(
                     call_id="c1",
                 )
             )
-        return AgentTurn(
-            text="Crypto exchanges have reporting obligations [CFR:9999.99(z)]."
-        )
+        return AgentTurn(text="Crypto exchanges have reporting obligations [CFR:9999.99(z)].")
 
     logger = AuditLogger(log_path=tmp_path / "audit.jsonl")
     result = answer_query_agentic(
@@ -271,9 +255,7 @@ def test_agentic_pipeline_max_turns_refuses(
 
     def responder(system, user, tools, history):
         return AgentTurn(
-            tool_call=ToolCall(
-                name="search_regulations", arguments={"query": "x"}, call_id="c"
-            )
+            tool_call=ToolCall(name="search_regulations", arguments={"query": "x"}, call_id="c")
         )
 
     logger = AuditLogger(log_path=tmp_path / "audit.jsonl")
@@ -304,9 +286,7 @@ def test_agentic_pipeline_writes_audit_record(
                     call_id="c1",
                 )
             )
-        return AgentTurn(
-            text="Within two business days liability is $50 [CFR:1005.6(b)(1)]."
-        )
+        return AgentTurn(text="Within two business days liability is $50 [CFR:1005.6(b)(1)].")
 
     logger = AuditLogger(log_path=log_path)
     answer_query_agentic(

@@ -43,9 +43,7 @@ _CHARS_PER_TOKEN = 4
 _SENTENCE_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z(])")
 
 
-def chunk_nodes(
-    nodes: list[HierarchyNode], *, max_tokens: int = DEFAULT_MAX_TOKENS
-) -> list[Chunk]:
+def chunk_nodes(nodes: list[HierarchyNode], *, max_tokens: int = DEFAULT_MAX_TOKENS) -> list[Chunk]:
     """Turn a list of leaf hierarchy nodes into a list of searchable Chunks."""
     chunks: list[Chunk] = []
     for node in nodes:
@@ -89,9 +87,7 @@ def _build_prefix(node: HierarchyNode) -> str:
     """
     lines = [f"Citation: {node.citation_path}"]
     if node.is_interpretation:
-        lines.append(
-            f"Official Interpretation, 12 CFR Part {node.part}, Comment {node.comment_id}"
-        )
+        lines.append(f"Official Interpretation, 12 CFR Part {node.part}, Comment {node.comment_id}")
     elif node.section_heading:
         lines.append(node.section_heading)
     return "\n".join(lines)

@@ -97,9 +97,7 @@ def compare_reports(
     """
     det_by_id = {c.entry_id: c for c in deterministic.cases}
     agent_by_id = {c.entry_id: c for c in agent.cases}
-    common_ids = [
-        c.entry_id for c in deterministic.cases if c.entry_id in agent_by_id
-    ]
+    common_ids = [c.entry_id for c in deterministic.cases if c.entry_id in agent_by_id]
 
     comparisons = [
         CaseComparison(
@@ -133,9 +131,7 @@ def format_comparison(report: ComparisonReport) -> str:
     lines.append("                              deterministic   agent     delta")
     lines.append(_row("citation_accuracy", det.citation_accuracy, agent.citation_accuracy))
     lines.append(_row("answer_correctness", det.answer_correctness, agent.answer_correctness))
-    lines.append(
-        _row("refusal_rate_correct", det.refusal_rate_correct, agent.refusal_rate_correct)
-    )
+    lines.append(_row("refusal_rate_correct", det.refusal_rate_correct, agent.refusal_rate_correct))
     lines.append(
         _row(
             "refusal_rate_false_pos",
@@ -177,9 +173,7 @@ def format_comparison(report: ComparisonReport) -> str:
     return "\n".join(lines)
 
 
-def _row(
-    label: str, det: float, agent: float, *, lower_is_better: bool = False
-) -> str:
+def _row(label: str, det: float, agent: float, *, lower_is_better: bool = False) -> str:
     delta = agent - det
     arrow = ""
     if abs(delta) >= 0.005:

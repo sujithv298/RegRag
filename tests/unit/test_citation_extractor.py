@@ -26,9 +26,7 @@ def test_extracts_free_form_comment_citation() -> None:
 
 
 def test_extracts_multiple_citations() -> None:
-    text = (
-        "If timely, $50 cap [CFR:1005.6(b)(1)]. If untimely, $500 cap [CFR:1005.6(b)(2)]."
-    )
+    text = "If timely, $50 cap [CFR:1005.6(b)(1)]. If untimely, $500 cap [CFR:1005.6(b)(2)]."
     out = CitationExtractor().extract(text)
     paths = [c.citation_path for c in out]
     assert "12 CFR 1005.6(b)(1)" in paths

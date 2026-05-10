@@ -84,9 +84,7 @@ def _find_part_div(root: etree._Element) -> etree._Element | None:
     return root.find(".//DIV5[@TYPE='PART']")
 
 
-def _parse_rule_text(
-    part_div: etree._Element, *, title: int, part: int
-) -> list[HierarchyNode]:
+def _parse_rule_text(part_div: etree._Element, *, title: int, part: int) -> list[HierarchyNode]:
     """Walk DIV6 (Subpart) → DIV8 (Section) → P (Paragraph)."""
     nodes: list[HierarchyNode] = []
     for subpart_div in part_div.findall("DIV6"):
@@ -156,9 +154,7 @@ def _parse_interpretations(
     return nodes
 
 
-def _extract_designators(
-    raw_text: str, last_path: tuple[str, ...]
-) -> tuple[tuple[str, ...], str]:
+def _extract_designators(raw_text: str, last_path: tuple[str, ...]) -> tuple[tuple[str, ...], str]:
     """Pull leading paragraph designators off raw text.
 
     Returns (designator_path, body). If no designator is found, falls back to

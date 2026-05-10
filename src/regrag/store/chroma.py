@@ -39,8 +39,7 @@ class ChromaStore:
             import chromadb
         except ImportError as exc:  # pragma: no cover
             raise RuntimeError(
-                "ChromaStore requires chromadb. Install via `uv sync` "
-                "(it's in the default deps)."
+                "ChromaStore requires chromadb. Install via `uv sync` (it's in the default deps)."
             ) from exc
 
         if persist_path:
@@ -70,16 +69,13 @@ class ChromaStore:
             embeddings=embeddings,
             documents=[c.text for c in chunks],
             metadatas=[
-                {"citation_path": c.citation_path, "section": c.section or ""}
-                for c in chunks
+                {"citation_path": c.citation_path, "section": c.section or ""} for c in chunks
             ],
         )
         for c in chunks:
             self._chunks_by_id[c.chunk_id] = c
 
-    def search(
-        self, query_embedding: list[float], *, k: int = 10
-    ) -> list[ScoredChunk]:
+    def search(self, query_embedding: list[float], *, k: int = 10) -> list[ScoredChunk]:
         result = self._collection.query(
             query_embeddings=[query_embedding],
             n_results=k,
@@ -95,9 +91,7 @@ class ChromaStore:
                 continue
             # Chroma cosine "distance" is 1 - cosine_similarity, so invert.
             similarity = 1.0 - float(distance)
-            scored.append(
-                ScoredChunk(chunk=chunk, score=similarity, retriever="dense")
-            )
+            scored.append(ScoredChunk(chunk=chunk, score=similarity, retriever="dense"))
         return scored
 
     def __len__(self) -> int:

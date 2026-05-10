@@ -36,9 +36,7 @@ class VectorStore(Protocol):
             ValueError: if `len(chunks) != len(embeddings)`.
         """
 
-    def search(
-        self, query_embedding: list[float], *, k: int = 10
-    ) -> list[ScoredChunk]:
+    def search(self, query_embedding: list[float], *, k: int = 10) -> list[ScoredChunk]:
         """Return the top-k chunks most similar to `query_embedding`.
 
         Each ScoredChunk carries `retriever="dense"`.

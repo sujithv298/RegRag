@@ -58,9 +58,7 @@ def run_agent_loop(
     steps: list[AgentStep] = []
 
     for turn in range(max_turns):
-        agent_turn = adapter.agent_turn(
-            system=system, user=user, tools=tools, history=steps
-        )
+        agent_turn = adapter.agent_turn(system=system, user=user, tools=tools, history=steps)
 
         if agent_turn.is_final:
             assert agent_turn.text is not None

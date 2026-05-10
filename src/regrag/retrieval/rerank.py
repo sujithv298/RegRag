@@ -92,9 +92,7 @@ class LexicalOverlapReranker:
             body_tokens = set(tokenize(sc.chunk.source_text))
             overlap = len(query_tokens & body_tokens)
             score = overlap / len(query_tokens)
-            rescored.append(
-                ScoredChunk(chunk=sc.chunk, score=score, retriever="rerank")
-            )
+            rescored.append(ScoredChunk(chunk=sc.chunk, score=score, retriever="rerank"))
         rescored.sort(key=lambda r: r.score, reverse=True)
         return rescored[:top_k]
 

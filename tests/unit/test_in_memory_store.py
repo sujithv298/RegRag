@@ -14,12 +14,20 @@ from regrag.store import InMemoryVectorStore, VectorStore
 def _make_chunks() -> list:
     nodes = [
         HierarchyNode(
-            title=12, part=1005, section="1005.1", paragraph_path=("a",),
-            section_heading="§ 1005.1 Authority and purpose.", text="Authority text.",
+            title=12,
+            part=1005,
+            section="1005.1",
+            paragraph_path=("a",),
+            section_heading="§ 1005.1 Authority and purpose.",
+            text="Authority text.",
         ),
         HierarchyNode(
-            title=12, part=1005, section="1005.1", paragraph_path=("b",),
-            section_heading="§ 1005.1 Authority and purpose.", text="Purpose text.",
+            title=12,
+            part=1005,
+            section="1005.1",
+            paragraph_path=("b",),
+            section_heading="§ 1005.1 Authority and purpose.",
+            text="Purpose text.",
         ),
     ]
     return chunk_nodes(nodes)

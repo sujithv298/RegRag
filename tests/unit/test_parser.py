@@ -83,9 +83,7 @@ def test_citation_path_for_simple_paragraph(parsed: list[HierarchyNode]) -> None
 
 
 def test_citation_path_for_nested_paragraph(parsed: list[HierarchyNode]) -> None:
-    s6_b1 = next(
-        n for n in parsed if n.section == "1005.6" and n.paragraph_path == ("b", "1")
-    )
+    s6_b1 = next(n for n in parsed if n.section == "1005.6" and n.paragraph_path == ("b", "1"))
     assert s6_b1.citation_path == "12 CFR 1005.6(b)(1)"
 
 

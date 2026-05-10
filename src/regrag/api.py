@@ -90,9 +90,7 @@ class _Pipeline:
         ]
         retriever = HybridRetriever(
             bm25=BM25Index(),
-            dense=DenseRetriever(
-                embedder=HashingEmbedder(), store=InMemoryVectorStore()
-            ),
+            dense=DenseRetriever(embedder=HashingEmbedder(), store=InMemoryVectorStore()),
             reranker=LexicalOverlapReranker(),
         )
         retriever.add(chunks)

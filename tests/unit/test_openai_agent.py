@@ -148,12 +148,8 @@ def test_build_messages_includes_system_user_and_history() -> None:
     adapter = OpenAIAgentAdapter()
     history = [
         AgentStep(
-            call=ToolCall(
-                name="search_regulations", arguments={"query": "x"}, call_id="t1"
-            ),
-            result=ToolResult(
-                call_id="t1", tool_name="search_regulations", content="results"
-            ),
+            call=ToolCall(name="search_regulations", arguments={"query": "x"}, call_id="t1"),
+            result=ToolResult(call_id="t1", tool_name="search_regulations", content="results"),
         )
     ]
     messages = adapter._build_messages(

@@ -14,8 +14,12 @@ from regrag.retrieval import ScoredChunk, rrf_fuse
 def _make_chunks(n: int) -> list:
     nodes = [
         HierarchyNode(
-            title=12, part=1005, section=f"1005.{i}", paragraph_path=("a",),
-            section_heading=f"§ 1005.{i} Test.", text=f"Body of section {i}.",
+            title=12,
+            part=1005,
+            section=f"1005.{i}",
+            paragraph_path=("a",),
+            section_heading=f"§ 1005.{i} Test.",
+            text=f"Body of section {i}.",
         )
         for i in range(1, n + 1)
     ]
@@ -78,9 +82,7 @@ def test_rrf_score_uses_rank_not_raw_score() -> None:
         ScoredChunk(chunk=chunks[1], score=999_998.0, retriever="bm25"),
     ]
     fused_high = rrf_fuse([list_low_flipped, list_high], top_k=2)
-    assert [r.chunk.citation_path for r in fused_low] == [
-        r.chunk.citation_path for r in fused_high
-    ]
+    assert [r.chunk.citation_path for r in fused_low] == [r.chunk.citation_path for r in fused_high]
 
 
 def test_fused_results_are_labeled_hybrid() -> None:

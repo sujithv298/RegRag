@@ -65,9 +65,7 @@ async def fetch_part_xml(
     return await _fetch(client, url, params)
 
 
-async def _fetch(
-    client: httpx.AsyncClient, url: str, params: dict[str, str]
-) -> bytes:
+async def _fetch(client: httpx.AsyncClient, url: str, params: dict[str, str]) -> bytes:
     response = await client.get(url, params=params)
     if response.status_code != 200:
         raise ECFRError(

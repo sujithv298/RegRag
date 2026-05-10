@@ -21,15 +21,18 @@ def _make_scored(*texts_and_citations: tuple[str, str]) -> list[ScoredChunk]:
     """Build ScoredChunks from (body_text, fake_section) pairs."""
     nodes = [
         HierarchyNode(
-            title=12, part=1005, section=section, paragraph_path=("a",),
-            section_heading=f"§ {section} Test.", text=body,
+            title=12,
+            part=1005,
+            section=section,
+            paragraph_path=("a",),
+            section_heading=f"§ {section} Test.",
+            text=body,
         )
         for body, section in texts_and_citations
     ]
     chunks = chunk_nodes(nodes)
     return [
-        ScoredChunk(chunk=c, score=1.0 - i * 0.1, retriever="hybrid")
-        for i, c in enumerate(chunks)
+        ScoredChunk(chunk=c, score=1.0 - i * 0.1, retriever="hybrid") for i, c in enumerate(chunks)
     ]
 
 
@@ -59,7 +62,9 @@ def test_noop_returns_input_unchanged() -> None:
 
 def test_noop_respects_top_k() -> None:
     inputs = _make_scored(
-        ("a", "1005.1"), ("b", "1005.2"), ("c", "1005.3"),
+        ("a", "1005.1"),
+        ("b", "1005.2"),
+        ("c", "1005.3"),
     )
     out = NoOpReranker().rerank("q", inputs, top_k=2)
     assert len(out) == 2
@@ -76,9 +81,7 @@ def test_lexical_reranker_orders_by_query_overlap() -> None:
         ("Consumer liability for unauthorized transfers and access devices.", "1005.6"),
         ("Some unrelated content about disclosures.", "1005.7"),
     )
-    out = LexicalOverlapReranker().rerank(
-        "consumer liability unauthorized", inputs, top_k=3
-    )
+    out = LexicalOverlapReranker().rerank("consumer liability unauthorized", inputs, top_k=3)
     # The §1005.6 chunk has all three query content tokens — should be #1.
     assert out[0].chunk.section == "1005.6"
 

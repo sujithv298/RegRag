@@ -106,8 +106,7 @@ def test_source_text_matches_original_for_unsplit_chunks(
 def test_long_node_splits_into_multiple_chunks() -> None:
     # Build a synthetic node whose body greatly exceeds the default budget.
     long_body = " ".join(
-        f"Sentence number {i} contains some words to take up some token budget."
-        for i in range(200)
+        f"Sentence number {i} contains some words to take up some token budget." for i in range(200)
     )
     node = HierarchyNode(
         title=12,
@@ -136,8 +135,7 @@ def test_split_chunks_partition_the_original_text() -> None:
     """source_text concatenated across splits == original body. Splitting
     is a partition, not a transformation — no text added, none lost."""
     long_body = " ".join(
-        f"Sentence {i} has some content to fill space and force a split."
-        for i in range(150)
+        f"Sentence {i} has some content to fill space and force a split." for i in range(150)
     )
     node = HierarchyNode(
         title=12,

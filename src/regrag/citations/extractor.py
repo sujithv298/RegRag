@@ -26,9 +26,7 @@ from regrag.citations.types import ExtractedCitation
 _TAGGED_RE = re.compile(r"\[CFR:([^\]]+)\]")
 
 # Free-form rule citation: "12 CFR 1005.6(b)(1)" / "12 CFR 1005.6"
-_FREE_RULE_RE = re.compile(
-    r"\b(\d+)\s+CFR\s+(\d+\.\d+(?:\([A-Za-z0-9]+\))*)"
-)
+_FREE_RULE_RE = re.compile(r"\b(\d+)\s+CFR\s+(\d+\.\d+(?:\([A-Za-z0-9]+\))*)")
 
 # Free-form Official Interpretation citation:
 # "12 CFR 1005, Comment 6(b)(1)-1" or "12 CFR Part 1005, Comment 6(b)-1"

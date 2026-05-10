@@ -63,9 +63,7 @@ class CitationVerifier:
                 self._chunk_id_by_citation[cp] = c.chunk_id
         self._support_threshold = support_threshold
 
-    def verify(
-        self, extracted: list[ExtractedCitation]
-    ) -> VerificationResult:
+    def verify(self, extracted: list[ExtractedCitation]) -> VerificationResult:
         verified: list[VerifiedCitation] = []
         for ec in extracted:
             source_text = self._source_text_by_citation.get(ec.citation_path)

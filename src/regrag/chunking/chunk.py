@@ -35,7 +35,9 @@ class Chunk(BaseModel):
         "with `::N` where N is the split index."
     )
     text: str = Field(description="What gets embedded and indexed (prefix + heading + body).")
-    source_text: str = Field(description="The original paragraph body, no prefix. Verifier uses this.")
+    source_text: str = Field(
+        description="The original paragraph body, no prefix. Verifier uses this."
+    )
     citation_path: str = Field(description="Canonical CFR citation, copied from source node.")
 
     # Source-node metadata, denormalized for retrieval-time access without

@@ -98,9 +98,7 @@ class BM25Index:
         if not query_tokens:
             return []
         scores = self._bm25.get_scores(query_tokens)
-        ranked = sorted(
-            enumerate(scores), key=lambda pair: pair[1], reverse=True
-        )
+        ranked = sorted(enumerate(scores), key=lambda pair: pair[1], reverse=True)
         results: list[ScoredChunk] = []
         for idx, score in ranked[:k]:
             if score <= 0:
