@@ -11,9 +11,9 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+
 from evals import compute_metrics, load_gold_set, run_eval
 from evals.types import EvalCaseResult, EvalReport, GoldEntry
-
 from regrag.audit import AuditLogger
 from regrag.chunking import chunk_nodes
 from regrag.ingest import parse_part_xml

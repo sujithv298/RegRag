@@ -101,6 +101,12 @@ ignore = [
 "tests/**" = ["B", "N802"]   # tests can use long names and weird patterns
 "evals/**" = ["B"]
 
+[tool.ruff.lint.isort]
+# Tell isort which packages are ours, so import groups are stable across
+# ruff versions. Without this, older ruff puts `evals` in the third-party
+# group with pytest and re-flags I001 in CI.
+known-first-party = ["regrag", "evals"]
+
 # ---- Type check ----
 [tool.mypy]
 python_version = "3.11"

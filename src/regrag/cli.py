@@ -491,7 +491,6 @@ def eval_compare(
         load_gold_set,
         run_eval,
     )
-
     from regrag.pipeline_agent import answer_query_agentic
 
     chunks = [
