@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.eggs/
+.Python
+build/
+dist/
+develop-eggs/
+downloads/
+parts/
+pip-wheel-metadata/
+share/python-wheels/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# uv
+.uv/
+
+# Tooling caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.local
+
+# Project: ingested data (regenerable from eCFR API)
+data/
+!data/.gitkeep
+
+# Project: chroma + bm25 indices
+.chroma/
+*.bm25
+
+# Project: eval reports (regenerable)
+evals/reports/
+!evals/reports/.gitkeep
+
+# Local model weights
+*.gguf
+*.bin
+models/

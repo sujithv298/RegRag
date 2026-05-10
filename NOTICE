@@ -1,0 +1,16 @@
+RegRAG
+Copyright 2026 RegRAG contributors
+
+This product includes software developed by third parties under their own licenses:
+
+- Microsoft Presidio (https://github.com/microsoft/presidio) — MIT License
+- BAAI BGE embedding models (https://huggingface.co/BAAI) — MIT License
+- ChromaDB (https://github.com/chroma-core/chroma) — Apache 2.0
+- sentence-transformers (https://github.com/UKPLab/sentence-transformers) — Apache 2.0
+
+Regulatory text ingested by this template is sourced from the
+Electronic Code of Federal Regulations (eCFR), which is in the public domain.
+See https://www.ecfr.gov/about for the official statement.
+
+This software is not legal advice and is not endorsed by the CFPB, the Federal
+Reserve, the OCC, the FDIC, or any other regulator.

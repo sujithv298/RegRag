@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────
+   Design tokens — Tailwind 4 inline @theme. Distinctive violet
+   primary, layered surfaces, refined typography.
+   ───────────────────────────────────────────────────────────── */
+
+@theme inline {
+  --color-bg: #f6f7fb;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0f7;
+  --color-surface-3: #e3e7f1;
+
+  --color-border: #e2e5ee;
+  --color-border-strong: #c4cad9;
+  --color-border-focus: #c2b3ff;
+
+  --color-text: #0f172a;
+  --color-text-2: #475569;
+  --color-text-3: #8a93a6;
+
+  --color-accent: #6d4aff;
+  --color-accent-strong: #5832d8;
+  --color-accent-hover: #5d3def;
+  --color-accent-bg: #f1edff;
+  --color-accent-border: #d8cdff;
+
+  --color-success: #059669;
+  --color-success-bg: #ecfdf5;
+  --color-success-border: #a7f3d0;
+
+  --color-danger: #e11d48;
+  --color-danger-bg: #fff1f2;
+  --color-danger-border: #fecdd3;
+
+  --color-amber: #d97706;
+  --color-amber-bg: #fef3c7;
+  --color-amber-border: #fcd34d;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+@layer base {
+  html, body { background: var(--color-bg); color: var(--color-text); }
+  body {
+    font-family: var(--font-sans);
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Subtle ambient gradient on the page */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 92% -10%, rgba(109, 74, 255, 0.08), transparent 45%),
+    radial-gradient(circle at 8% 110%, rgba(5, 150, 105, 0.05), transparent 40%);
+}
+
+/* Caret for streaming-text effect */
+.caret-blink::after {
+  content: "▍";
+  display: inline-block;
+  margin-left: 2px;
+  color: var(--color-accent);
+  animation: caret 0.9s steps(1) infinite;
+}
+@keyframes caret {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Custom focus ring */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(109, 74, 255, 0.18);
+  border-color: var(--color-accent);
+}
+
+/* Code-block style for the audit JSON */
+pre.code-block {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}

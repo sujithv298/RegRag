@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Handcrafted excerpt of 12 CFR Part 1005 (Regulation E) modeled on the
+  documented eCFR XML schema. NOT the full Part — just enough sections to
+  exercise the parser against:
+    - DIV5 (Part) with HEAD, AUTH, SOURCE
+    - DIV6 (Subpart) with HEAD
+    - DIV8 (Section) with HEAD and multiple <P> paragraphs
+    - Nested paragraph designators like (a), (b), (b)(1), (b)(1)(i)
+    - <I> italic markup inline in <P> (must be flattened to text, not preserved as structure)
+    - DIV9 (Supplement I) with Official Interpretations referencing back to §1005.6
+  The rule text below is paraphrased to roughly match Reg E in shape and
+  vocabulary; do not treat as authoritative legal text.
+-->
+<DIV5 N="1005" NODE="12:8.0.1.6.1005" TYPE="PART">
+  <HEAD>PART 1005&#8212;ELECTRONIC FUND TRANSFERS (REGULATION E)</HEAD>
+  <AUTH>
+    <HED>Authority:</HED>
+    <PSPACE>15 U.S.C. 1693 et seq.</PSPACE>
+  </AUTH>
+  <SOURCE>
+    <HED>Source:</HED>
+    <PSPACE>76 FR 81020, Dec. 27, 2011, unless otherwise noted.</PSPACE>
+  </SOURCE>
+  <DIV6 N="A" NODE="12:8.0.1.6.1005.1" TYPE="SUBPART">
+    <HEAD>Subpart A&#8212;General</HEAD>
+    <DIV8 N="&#167; 1005.1" NODE="12:8.0.1.6.1005.1.1" TYPE="SECTION">
+      <HEAD>&#167; 1005.1 Authority and purpose.</HEAD>
+      <P>(a) <I>Authority.</I> This part, known as Regulation E, is issued by the Bureau of Consumer Financial Protection to implement the Electronic Fund Transfer Act.</P>
+      <P>(b) <I>Purpose.</I> This part carries out the purposes of the Electronic Fund Transfer Act, the primary objective of which is the protection of individual consumers engaging in electronic fund transfers and remittance transfers.</P>
+    </DIV8>
+    <DIV8 N="&#167; 1005.6" NODE="12:8.0.1.6.1005.1.6" TYPE="SECTION">
+      <HEAD>&#167; 1005.6 Liability of consumer for unauthorized transfers.</HEAD>
+      <P>(a) <I>Conditions for liability.</I> A consumer may be held liable, within the limitations described in paragraph (b) of this section, for an unauthorized electronic fund transfer involving the consumer's account only if the financial institution has provided the disclosures required by &#167; 1005.7(b)(1), (2), and (3).</P>
+      <P>(b) <I>Limitations on amount of liability.</I> A consumer's liability for an unauthorized electronic fund transfer or a series of related unauthorized transfers shall be determined as follows:</P>
+      <P>(b)(1) <I>Timely notice given.</I> If the consumer notifies the financial institution within two business days after learning of the loss or theft of the access device, the consumer's liability shall not exceed the lesser of $50 or the amount of unauthorized transfers that occur before notice to the financial institution.</P>
+      <P>(b)(2) <I>Timely notice not given.</I> If the consumer fails to notify the financial institution within two business days after learning of the loss or theft of the access device, the consumer's liability shall not exceed the lesser of $500 or the sum of:</P>
+      <P>(b)(2)(i) $50 or the amount of unauthorized transfers that occur within the two business days, whichever is less; and</P>
+      <P>(b)(2)(ii) The amount of unauthorized transfers that occur after the close of two business days and before notice to the institution, provided the institution establishes that these transfers would not have occurred had the consumer notified the institution within that two-day period.</P>
+    </DIV8>
+  </DIV6>
+  <DIV9 N="Pt. 1005, Supp. I" NODE="12:8.0.1.6.1005.0.1" TYPE="APPENDIX">
+    <HEAD>Supplement I to Part 1005&#8212;Official Interpretations</HEAD>
+    <DIV9 TYPE="SECTION">
+      <HEAD>Section 1005.6 Liability of Consumer for Unauthorized Transfers</HEAD>
+      <P>6(b) <I>Limitations on amount of liability.</I></P>
+      <P>1. <I>Knowledge.</I> The standard requiring the consumer's prompt notification to the financial institution after learning of the loss or theft of the access device applies only to the consumer's actual knowledge, not to constructive knowledge that a reasonable person would have had under the circumstances.</P>
+      <P>2. <I>Two business days.</I> The two-business-day period does not include the day on which the consumer learns of the loss or theft, nor any day on which the financial institution is closed for normal business.</P>
+    </DIV9>
+  </DIV9>
+</DIV5>

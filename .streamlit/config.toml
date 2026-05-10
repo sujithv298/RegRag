@@ -1,0 +1,16 @@
+# RegRAG playground theme — clean light theme with indigo primary.
+# Keep theme minimal so native Streamlit components carry the polish.
+
+[theme]
+base = "light"
+primaryColor = "#4f46e5"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8fafc"
+textColor = "#0f172a"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+runOnSave = true

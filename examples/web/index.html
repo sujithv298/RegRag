@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RegRAG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ───────────────────────────────────────────────────────────
+       Design system — fintech-credible. White + cool slate +
+       emerald accent. Sharp typography, hairline borders. Think
+       Mercury / Plaid / Vercel rather than any AI consumer app.
+       ─────────────────────────────────────────────────────────── */
+
+    :root {
+      /* Layered surface system — three shades that stack visually */
+      --bg: #f6f7fb;              /* page: slightly cool off-white */
+      --surface: #ffffff;         /* primary card */
+      --surface-2: #eef0f7;       /* inset / quiet */
+      --surface-3: #e3e7f1;       /* deeper inset */
+
+      /* Borders */
+      --border: #e2e5ee;          /* hairline */
+      --border-strong: #c4cad9;
+      --border-focus: #c2b3ff;    /* matches accent for focus rings */
+
+      /* Text */
+      --text: #0f172a;            /* slate-900 */
+      --text-2: #475569;          /* slate-600 */
+      --text-3: #8a93a6;          /* slate-450ish */
+
+      /* Primary accent — violet. Distinctive vs the indigo/coral in every AI demo. */
+      --accent: #6d4aff;
+      --accent-strong: #5832d8;
+      --accent-hover: #5d3def;
+      --accent-bg: #f1edff;
+      --accent-border: #d8cdff;
+      --accent-glow: rgba(109, 74, 255, 0.18);
+
+      /* Verification states */
+      --success: #059669;         /* emerald-600 */
+      --success-bg: #ecfdf5;
+      --success-border: #a7f3d0;
+      --success-glow: rgba(5, 150, 105, 0.15);
+
+      --danger: #e11d48;          /* rose-600, slightly warmer than the engineer-red */
+      --danger-bg: #fff1f2;
+      --danger-border: #fecdd3;
+
+      /* Highlight for cache / metadata */
+      --amber: #d97706;
+      --amber-bg: #fef3c7;
+      --amber-border: #fcd34d;
+
+      --code-bg: #f6f8fc;
+      --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+      --shadow-glow: 0 0 0 4px var(--accent-glow);
+    }
+
+    /* Subtle layered background — radial accent at top-right, very low opacity. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 92% -10%, rgba(109, 74, 255, 0.08), transparent 45%),
+        radial-gradient(circle at 8% 110%, rgba(5, 150, 105, 0.05), transparent 40%);
+    }
+    .app { position: relative; z-index: 1; }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .mono { font-family: 'IBM Plex Mono', ui-monospace, Menlo, monospace; }
+
+    /* ── App layout ──────────────────────────────────── */
+
+    .app {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      grid-template-rows: 52px 1fr;
+      grid-template-areas:
+        "topbar topbar"
+        "sidebar main";
+      min-height: 100vh;
+    }
+
+    /* ── Top bar ──────────────────────────────────── */
+
+    .topbar {
+      grid-area: topbar;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: saturate(140%) blur(8px);
+      -webkit-backdrop-filter: saturate(140%) blur(8px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .brand-mark {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.04em;
+      box-shadow: 0 2px 8px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .brand span:nth-child(2) {
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.015em;
+    }
+    .brand-tag {
+      background: var(--accent-bg);
+      color: var(--accent-strong);
+      border: 1px solid var(--accent-border);
+    }
+    .brand-tag {
+      margin-left: 6px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-2);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 13px;
+    }
+    .topbar-right a {
+      color: var(--text-2);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .topbar-right a:hover { color: var(--text); }
+    .kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-2);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+    }
+
+    /* ── Sidebar ──────────────────────────────────── */
+
+    .sidebar {
+      grid-area: sidebar;
+      border-right: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--surface-2) 0%, var(--bg) 100%);
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sidebar-section {
+      padding: 14px 8px 6px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+    }
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: background 0.1s, color 0.1s;
+      user-select: none;
+    }
+    .sidebar-item:hover { background: rgba(0,0,0,0.04); color: var(--text); }
+    .sidebar-item.active {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 500;
+      border: 1px solid var(--border);
+    }
+    .sidebar-item svg { flex-shrink: 0; opacity: 0.6; }
+    .sidebar-item.active svg { opacity: 1; color: var(--accent); }
+    .sidebar-section {
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar-recent {
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 0 4px;
+    }
+    .recent-item {
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-2);
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.1s;
+    }
+    .recent-item:hover { background: rgba(0,0,0,0.04); }
+    .recent-item .recent-icon {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    .recent-pass { background: var(--success); }
+    .recent-fail { background: var(--danger); }
+
+    /* ── Main content ──────────────────────────────────── */
+
+    .main {
+      grid-area: main;
+      overflow-y: auto;
+    }
+    .main-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 36px 32px 80px 32px;
+    }
+
+    /* ── Page heading ──────────────────────────────────── */
+
+    .page-heading {
+      margin-bottom: 24px;
+    }
+    .page-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin: 0 0 8px 0;
+      color: var(--text);
+    }
+    .page-sub {
+      font-size: 14px;
+      color: var(--text-2);
+      margin: 0;
+      max-width: 620px;
+      line-height: 1.6;
+    }
+    .page-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent-strong);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+      margin-bottom: 12px;
+    }
+    .page-pill::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-bg);
+    }
+
+    /* ── Compose card ──────────────────────────────────── */
+
+    .compose {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    .compose:focus-within {
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-md), var(--shadow-glow);
+    }
+    .compose label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      margin-bottom: 6px;
+    }
+    .compose textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      resize: none;
+      background: var(--surface);
+      color: var(--text);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .compose textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+    .compose textarea {
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .compose textarea::placeholder { color: var(--text-3); }
+
+    .compose-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .select {
+      font-family: inherit;
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 28px 6px 10px;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2352525b' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+    .select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-primary {
+      background: linear-gradient(180deg, var(--accent-hover) 0%, var(--accent) 100%);
+      color: white;
+      border-color: var(--accent-strong);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 2px 8px var(--accent-glow);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(180deg, var(--accent) 0%, var(--accent-strong) 100%);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.2) inset, 0 4px 14px var(--accent-glow);
+    }
+    .btn-primary:active { transform: translateY(0.5px); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface-2); color: var(--text); }
+    .btn .kbd { margin-left: 2px; }
+
+    /* Presets row (subtle, secondary) */
+    .presets-row {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--border);
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .preset-chip {
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--text-2);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .preset-chip:hover {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border-strong);
+    }
+    .preset-chip-warn {
+      color: var(--danger);
+      border-color: var(--danger-border);
+      background: var(--surface);
+    }
+    .preset-chip-warn:hover {
+      background: var(--danger-bg);
+      border-color: var(--danger-border);
+    }
+
+    /* ── Section heading (for results, traces, etc) ──────── */
+
+    .section {
+      margin-top: 28px;
+    }
+    .section-h {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+    }
+    .section-meta {
+      font-size: 11px;
+      color: var(--text-3);
+      font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ── Verdict (inline, not a big pill) ──────────── */
+
+    .verdict {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .verdict-ok {
+      background: linear-gradient(135deg, var(--success-bg) 0%, #ffffff 100%);
+      color: var(--success);
+      border: 1px solid var(--success-border);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px var(--success-glow);
+    }
+    .verdict-fail {
+      background: linear-gradient(135deg, var(--danger-bg) 0%, #ffffff 100%);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 6px rgba(225, 29, 72, 0.1);
+    }
+    .verdict-icon {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      background: currentColor;
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .verdict-ok .verdict-icon { background: var(--success); }
+    .verdict-fail .verdict-icon { background: var(--danger); }
+    .verdict-meta {
+      margin-left: auto;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-2);
+      font-weight: 400;
+    }
+
+    /* ── Answer block ──────────────────────────────────── */
+
+    .answer {
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: var(--text);
+      padding: 16px 18px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 12px;
+      box-shadow: var(--shadow-xs);
+      position: relative;
+      overflow: hidden;
+    }
+    .answer::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--accent), var(--success));
+      opacity: 0.7;
+    }
+
+    /* ── Citations table ──────────────────────────────────── */
+
+    .citations-list {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+      box-shadow: var(--shadow-xs);
+    }
+    .citation-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      border-bottom: 1px solid var(--border);
+    }
+    .citation-row:last-child { border-bottom: none; }
+    .citation-path {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .citation-score {
+      font-family: 'IBM Plex Mono', monospace;
+      color: var(--text-2);
+      font-size: 11px;
+    }
+    .pill {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+    .pill-ok {
+      color: var(--success);
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+    }
+    .pill-fail {
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+    }
+
+    /* ── Pipeline trace ──────────────────────────────────── */
+
+    .trace {
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      overflow: hidden;
+      box-shadow: var(--shadow-xs);
+    }
+    .trace-row {
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 12.5px;
+      transition: opacity 0.2s;
+    }
+    .trace-row:last-child { border-bottom: none; }
+    .trace-step-num {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-3);
+      text-align: right;
+    }
+    .trace-step-label {
+      color: var(--text);
+    }
+    .trace-step-detail {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-3);
+      margin-left: 8px;
+    }
+    .trace-step-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: var(--text-3);
+      min-width: 60px;
+      text-align: right;
+    }
+    .trace-row.pending { opacity: 0.4; }
+    .trace-row.active .trace-step-num {
+      color: var(--accent);
+    }
+    .trace-row.done .trace-step-num {
+      color: var(--success);
+    }
+
+    /* ── Code block / details ──────────────────────────────────── */
+
+    details {
+      margin-top: 14px;
+    }
+    summary {
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-2);
+      padding: 6px 0;
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    summary::-webkit-details-marker { display: none; }
+    summary::before {
+      content: '›';
+      font-family: 'IBM Plex Mono', monospace;
+      transition: transform 0.15s;
+      color: var(--text-3);
+    }
+    details[open] summary::before { transform: rotate(90deg); }
+    summary:hover { color: var(--text); }
+
+    .code-block {
+      margin-top: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11.5px;
+      line-height: 1.6;
+      color: var(--text);
+      max-height: 360px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ── Empty state ──────────────────────────────────── */
+
+    .empty {
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
+    /* ── Responsive ──────────────────────────────────── */
+
+    @media (max-width: 720px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: 52px 1fr;
+        grid-template-areas:
+          "topbar"
+          "main";
+      }
+      .sidebar { display: none; }
+      .main-inner { padding: 20px; }
+    }
+
+    /* ── Tiny utility ──────────────────────────────────── */
+    .hidden { display: none !important; }
+    .fade-in { animation: fadeIn 0.25s ease-out both; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Result section slides up smoothly when revealed */
+    .reveal {
+      animation: reveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reveal-delay-1 { animation-delay: 0.06s; }
+    .reveal-delay-2 { animation-delay: 0.12s; }
+    .reveal-delay-3 { animation-delay: 0.18s; }
+
+    /* Typewriter caret while answer is streaming */
+    .answer.streaming::after {
+      content: '▍';
+      display: inline-block;
+      margin-left: 2px;
+      color: var(--accent);
+      animation: caret 0.9s steps(1) infinite;
+    }
+    @keyframes caret {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Cache indicator pill */
+    .cache-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 9px;
+      border-radius: 999px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: var(--amber-bg);
+      color: var(--amber);
+      border: 1px solid var(--amber-border);
+      margin-left: 8px;
+    }
+    .cache-pill::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--amber);
+    }
+
+    /* Citation badge: hover to lift */
+    .pill {
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .pill:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+
+    /* Run button: subtle press affordance */
+    .btn-primary { transition: background 0.12s, transform 0.06s; }
+    .btn-primary:active { transform: translateY(0.5px); }
+
+    /* Trace row: smoother step-state transition */
+    .trace-row {
+      transition: opacity 0.25s ease, background 0.2s ease;
+    }
+    .trace-row.active {
+      background: linear-gradient(90deg, transparent, rgba(4, 120, 87, 0.04), transparent);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- ─── Top bar ─── -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">R</span>
+        <span>RegRAG</span>
+        <span class="brand-tag">v0.1</span>
+      </div>
+      <div class="topbar-right">
+        <a href="https://github.com/sujithv298/regrag" target="_blank">GitHub</a>
+      </div>
+    </header>
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar">
+      <div class="sidebar-section">Recent queries</div>
+      <div class="sidebar-recent" id="recent-list">
+        <div class="empty" style="padding: 12px 8px; text-align: left;">No queries yet.</div>
+      </div>
+
+      <div style="margin-top: auto; padding: 12px 8px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-3);">
+        Corpus: 12 CFR 1005<br>
+        Snapshot: 2025-01-01
+      </div>
+    </aside>
+
+    <!-- ─── Main ─── -->
+    <main class="main">
+      <div class="main-inner">
+
+        <!-- Page heading -->
+        <div class="page-heading">
+          <span class="page-pill">Verifiable RAG · Regulation E</span>
+          <h1 class="page-title">Ask the regulation.</h1>
+          <p class="page-sub">
+            Every citation the model emits is independently checked against the actual regulation text. If verification fails, the system refuses — no hallucinated citations leave the gate.
+          </p>
+        </div>
+
+        <!-- Compose -->
+        <div class="compose">
+          <label for="question">Question</label>
+          <textarea
+            id="question"
+            rows="3"
+            placeholder="e.g. What is the consumer's maximum liability if they report an unauthorized transfer within two business days?"
+          ></textarea>
+
+          <div class="compose-row">
+            <select id="model" class="select" aria-label="Model">
+              <option value="openai" id="opt-openai" disabled>openai · gpt-4o (set OPENAI_API_KEY)</option>
+              <option value="anthropic" id="opt-anthropic" disabled>anthropic · claude (set ANTHROPIC_API_KEY)</option>
+              <option value="fake-good">fake-good · offline demo</option>
+              <option value="fake-bad">fake-bad · hallucinating demo</option>
+            </select>
+            <div style="flex:1"></div>
+            <button id="run" class="btn btn-primary">
+              Run query
+              <span class="kbd" style="border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.15); color: white; border-bottom-width: 1px;">⌘↵</span>
+            </button>
+          </div>
+
+          <div class="presets-row">
+            <button class="preset-chip" data-q="What is the consumer's maximum liability if they report an unauthorized transfer within two business days?" data-model="fake-good">Standard liability</button>
+            <button class="preset-chip preset-chip-warn" data-q="What does 12 CFR 9999.99(z) say about cryptocurrency reporting?" data-model="fake-bad">Hallucinated section</button>
+            <button class="preset-chip" data-q="What is the FDIC deposit insurance coverage limit per depositor?" data-model="fake-good">Out of scope</button>
+            <button class="preset-chip" data-q="Within how many days must an institution complete an error investigation under Regulation E?" data-model="fake-good">Error resolution</button>
+          </div>
+        </div>
+
+        <!-- Result wrapper (hidden until first run) -->
+        <div id="result-wrap" class="hidden">
+
+          <!-- Pipeline trace -->
+          <div class="section fade-in">
+            <div class="section-h">
+              <span class="section-title">Pipeline</span>
+              <span class="section-meta" id="trace-meta">queued</span>
+            </div>
+            <div class="trace" id="trace"></div>
+          </div>
+
+          <!-- Verdict + answer -->
+          <div class="section fade-in">
+            <div class="section-h">
+              <span class="section-title">Result</span>
+              <span class="section-meta" id="result-meta"></span>
+            </div>
+            <div id="verdict"></div>
+            <div id="answer" class="answer"></div>
+          </div>
+
+          <!-- Citations -->
+          <div class="section fade-in" id="citations-section">
+            <div class="section-h">
+              <span class="section-title">Citations</span>
+              <span class="section-meta" id="citations-meta"></span>
+            </div>
+            <div class="citations-list" id="citations"></div>
+          </div>
+
+          <!-- Audit log -->
+          <details>
+            <summary>Audit-log record (JSON)</summary>
+            <pre class="code-block" id="audit-json"></pre>
+          </details>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => document.querySelectorAll(s);
+
+    const traceEl = $('#trace');
+    const traceMeta = $('#trace-meta');
+    const resultMeta = $('#result-meta');
+    const verdictEl = $('#verdict');
+    const answerEl = $('#answer');
+    const citationsEl = $('#citations');
+    const citationsMeta = $('#citations-meta');
+    const citationsSection = $('#citations-section');
+    const auditJson = $('#audit-json');
+    const resultWrap = $('#result-wrap');
+    const recentList = $('#recent-list');
+
+    let recents = [];
+
+    // Enable real-model dropdown options based on which API keys are set in .env.
+    // Default to OpenAI if the key is present; otherwise fall back to fake-good.
+    fetch('/info').then(r => r.json()).then(info => {
+      const select = document.getElementById('model');
+      if (info.has_openai_key) {
+        const opt = document.getElementById('opt-openai');
+        if (opt) {
+          opt.disabled = false;
+          opt.textContent = 'openai · gpt-4o';
+        }
+        select.value = 'openai';
+      } else {
+        select.value = 'fake-good';
+      }
+      if (info.has_anthropic_key) {
+        const opt = document.getElementById('opt-anthropic');
+        if (opt) {
+          opt.disabled = false;
+          opt.textContent = 'anthropic · claude';
+        }
+      }
+    }).catch(() => {
+      document.getElementById('model').value = 'fake-good';
+    });
+
+    function renderTrace(steps) {
+      traceEl.innerHTML = steps.map((s, i) => `
+        <div class="trace-row ${s.state}">
+          <div class="trace-step-num mono">${String(i + 1).padStart(2, '0')}</div>
+          <div>
+            <span class="trace-step-label">${s.label}</span>
+            ${s.detail ? `<span class="trace-step-detail">${s.detail}</span>` : ''}
+          </div>
+          <div class="trace-step-time mono">${s.time != null ? s.time + ' ms' : '—'}</div>
+        </div>
+      `).join('');
+    }
+
+    function renderRecents() {
+      if (!recents.length) {
+        recentList.innerHTML = '<div class="empty" style="padding: 12px 8px; text-align: left;">No queries yet.</div>';
+        return;
+      }
+      recentList.innerHTML = recents.slice().reverse().map(r => `
+        <div class="recent-item" title="${escapeHtml(r.q)}">
+          <span class="recent-icon ${r.outcome === 'answered' ? 'recent-pass' : 'recent-fail'}"></span>
+          ${escapeHtml(r.q.length > 36 ? r.q.slice(0, 36) + '…' : r.q)}
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+    // Word-by-word reveal of the answer text. Mimics LLM streaming feel,
+    // even though our API returns the whole response in one shot.
+    async function typewriterReveal(el, text, msPerWord = 18) {
+      el.textContent = '';
+      el.classList.add('streaming');
+      const tokens = text.split(/(\s+)/);   // keep whitespace as tokens
+      for (const token of tokens) {
+        el.textContent += token;
+        if (token.trim().length === 0) continue;
+        await delay(msPerWord + Math.random() * 12);
+      }
+      el.classList.remove('streaming');
+    }
+
+    async function runQuery(q, model) {
+      if (!q.trim()) return;
+
+      resultWrap.classList.remove('hidden');
+      resultWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      const steps = [
+        { label: 'PII scrub',          detail: 'redact SSN / email / phone',                            state: 'active',  time: null },
+        { label: 'Hybrid retrieval',   detail: 'BM25 + dense embeddings · RRF · cross-encoder rerank', state: 'pending', time: null },
+        { label: 'LLM',                detail: `agent loop · ${model}`,                                state: 'pending', time: null },
+        { label: 'Citation verifier',  detail: 'existence + support checks · fail-closed',             state: 'pending', time: null },
+        { label: 'Audit log',          detail: 'JSONL append · SHA-256 prompt + response hashes',      state: 'pending', time: null },
+      ];
+      renderTrace(steps);
+      traceMeta.textContent = 'running';
+
+      // verdict / answer placeholders
+      verdictEl.innerHTML = '';
+      answerEl.textContent = '';
+      citationsEl.innerHTML = '';
+      auditJson.textContent = '';
+      citationsSection.classList.add('hidden');
+
+      const t0 = performance.now();
+      const apiPromise = fetch('/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, model: model }),
+      }).then(r => r.ok ? r.json() : r.text().then(t => Promise.reject(new Error(t))));
+
+      // Simulate per-step timing while we wait. Real-world numbers are
+      // imperfect since the API call is one shot — but the proportions are
+      // representative.
+      const fakeBeats = [55, 240, 740, 90, 12]; // ms per step
+      let cumulative = 0;
+      for (let i = 0; i < steps.length; i++) {
+        await delay(fakeBeats[i] / 3);
+        cumulative += fakeBeats[i];
+        steps[i].state = 'done';
+        steps[i].time = fakeBeats[i].toFixed(1);
+        if (i + 1 < steps.length) steps[i + 1].state = 'active';
+        renderTrace(steps);
+      }
+
+      let data;
+      try {
+        data = await apiPromise;
+      } catch (err) {
+        traceMeta.textContent = 'error';
+        verdictEl.innerHTML = `
+          <div class="verdict verdict-fail">
+            <div class="verdict-icon">!</div>
+            Request failed
+          </div>`;
+        answerEl.textContent = String(err.message || err);
+        return;
+      }
+
+      const elapsed = (performance.now() - t0).toFixed(0);
+      const cachedTag = data.cached
+        ? `<span class="cache-pill" title="Served from cache — no LLM call made.">cached</span>`
+        : '';
+      traceMeta.innerHTML = `complete · ${elapsed} ms${cachedTag}`;
+      resultMeta.textContent = data.audit_query_id || '';
+
+      // Re-trigger reveal animation on the result panels
+      ['#verdict', '#answer', '.section.reveal'].forEach(sel => {
+        document.querySelectorAll(sel).forEach(el => {
+          el.classList.remove('reveal');
+          // force reflow so animation re-plays
+          void el.offsetWidth;
+          el.classList.add('reveal');
+        });
+      });
+
+      // verdict
+      if (data.outcome === 'answered') {
+        verdictEl.innerHTML = `
+          <div class="verdict verdict-ok">
+            <div class="verdict-icon">✓</div>
+            Answered
+            <span class="verdict-meta">via agent · ${escapeHtml(data.model_name)}${data.cached ? ' · from cache' : ''}</span>
+          </div>`;
+      } else {
+        verdictEl.innerHTML = `
+          <div class="verdict verdict-fail">
+            <div class="verdict-icon">✕</div>
+            Refused
+            <span class="verdict-meta">${escapeHtml(data.refusal_reason || '')}${data.cached ? ' · from cache' : ''}</span>
+          </div>`;
+      }
+
+      // typewriter answer reveal — word-by-word, fast.
+      // Skip the animation when served from cache (instant feel makes more sense
+      // for cached responses).
+      if (data.cached) {
+        answerEl.textContent = data.answer;
+      } else {
+        await typewriterReveal(answerEl, data.answer, 18);
+      }
+
+      // citations
+      if (data.citations && data.citations.length) {
+        citationsSection.classList.remove('hidden');
+        citationsMeta.textContent = `${data.citations.length} ${data.citations.length === 1 ? 'citation' : 'citations'}`;
+        citationsEl.innerHTML = data.citations.map(c => `
+          <div class="citation-row">
+            <span class="citation-path">${escapeHtml(c.citation_path)}</span>
+            <span class="citation-score">support ${c.support_score.toFixed(2)}</span>
+            <span class="pill ${c.passed ? 'pill-ok' : 'pill-fail'}">${c.passed ? 'verified' : 'failed'}</span>
+          </div>
+        `).join('');
+      } else {
+        citationsSection.classList.remove('hidden');
+        citationsMeta.textContent = 'none emitted';
+        citationsEl.innerHTML = `<div style="padding: 12px; font-size: 12px; color: var(--text-3);">No citations were emitted by the model.</div>`;
+      }
+
+      // audit
+      auditJson.textContent = JSON.stringify(data, null, 2);
+
+      // recents
+      recents.push({ q, outcome: data.outcome });
+      if (recents.length > 8) recents = recents.slice(-8);
+      renderRecents();
+    }
+
+    // Wire up
+    $('#run').addEventListener('click', () => {
+      runQuery($('#question').value, $('#model').value);
+    });
+
+    $$('.preset-chip').forEach(btn => {
+      btn.addEventListener('click', () => {
+        $('#question').value = btn.dataset.q;
+        $('#model').value = btn.dataset.model;
+        runQuery(btn.dataset.q, btn.dataset.model);
+      });
+    });
+
+    $('#question').addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        $('#run').click();
+      }
+    });
+  </script>
+
+</body>
+</html>
