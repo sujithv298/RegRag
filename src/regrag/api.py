@@ -313,7 +313,7 @@ def query(req: QueryRequest, fresh: bool = False) -> QueryResponse:
         cached = _cache.get(req.question, req.model)
         if cached is not None:
             payload = {**cached, "cached": True}
-            return QueryResponse(**payload)
+            return QueryResponse.model_validate(payload)
 
     # ---- Cache miss → run the pipeline ----
     _pipeline.build()
@@ -356,7 +356,9 @@ def query(req: QueryRequest, fresh: bool = False) -> QueryResponse:
     # Persist to cache for next time
     _cache.set(req.question, req.model, response_payload)
 
-    return QueryResponse(**response_payload)
+    # `model_validate` instead of `**dict` spread so mypy can resolve the
+    # field types from the pydantic schema rather than the inferred union.
+    return QueryResponse.model_validate(response_payload)
 
 
 # ---- Static files (the UI itself) ----

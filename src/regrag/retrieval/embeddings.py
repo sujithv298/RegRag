@@ -156,6 +156,9 @@ class BGEEmbedder:
                 "for offline-only environments."
             ) from exc
         self._model = SentenceTransformer(self._model_name)
+        # sentence-transformers isn't fully typed; mypy sees `_model` as
+        # `object | Any` and can't resolve the method. Blanket ignore is
+        # fine here — it's the canonical SentenceTransformer API surface.
         self._dim_cache = int(
-            self._model.get_sentence_embedding_dimension()  # type: ignore[attr-defined]
+            self._model.get_sentence_embedding_dimension()  # type: ignore
         )

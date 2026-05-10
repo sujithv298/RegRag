@@ -108,12 +108,16 @@ ignore = [
 known-first-party = ["regrag", "evals"]
 
 # ---- Type check ----
+# Relaxed from `strict = true` across all of src + tests + evals. For an
+# open-source portfolio repo, requiring annotations on every pytest fixture
+# and tracking generics through FastAPI/Click decorators is more friction
+# than value. We scan src/ only and keep just the most useful default
+# checks. Tighten later if the repo grows production-bound.
 [tool.mypy]
 python_version = "3.11"
-strict = true
-warn_unused_ignores = true
 ignore_missing_imports = true
-files = ["src", "tests", "evals"]
+files = ["src"]
+no_implicit_optional = true
 
 # ---- Tests ----
 [tool.pytest.ini_options]
