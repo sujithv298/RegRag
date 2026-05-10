@@ -56,7 +56,8 @@ data/
 evals/reports/
 !evals/reports/.gitkeep
 
-# Local model weights
+# Local model weights (anchored to project root so it doesn't match
+# `src/regrag/models/` — that's our adapter PACKAGE, not weight files).
 *.gguf
 *.bin
-models/
+/models/
